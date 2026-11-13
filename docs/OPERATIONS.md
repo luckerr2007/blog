@@ -65,40 +65,58 @@ START_TIMEOUT=180 ./command start # 首次启动慢可加大超时
 
 构建链包含：GitHub 卡片数据、LQIP、字体子集化、Pagefind 索引。**Cloudflare Pages 单次构建上限 20 分钟**，当前约 2 分钟，余量充足。
 
-## 四、Cloudflare Pages 部署
+## 四、Cloudflare Workers（静态资源）部署
 
-### 首次创建
+当前实际使用 **Workers Builds**：仓库连 GitHub，构建产物作为静态资源上传到 Worker `blog`。
 
-1. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git；
-2. 选择 `luckerr2007/blog`，分支 `master`；
-3. 构建配置：
+### 面板构建配置
 
-   | 项 | 值 |
-   | --- | --- |
-   | Framework preset | Astro |
-   | Build command | `pnpm run build` |
-   | Build output directory | `dist` |
-   | Root directory | `/` |
+| 项 | 值 |
+| --- | --- |
+| 构建命令 | `pnpm run build` |
+| 部署命令 | `npx wrangler deploy` |
+| 根目录 | `/` |
+| 环境变量 | `NODE_VERSION=22` |
+| **不要设置** | `CF_WORKERS`（会让 Astro 挂上 Cloudflare 适配器，静态站点不需要） |
 
-4. 环境变量：`NODE_VERSION=22`（如需固定 pnpm，再加 `PNPM_VERSION=11.22.0`）；
-5. **不要设置 `CF_WORKERS`** —— 该变量会让 Astro 挂上 Cloudflare 适配器，静态站点不需要；
-6. 保存并部署，首次构建约 2-4 分钟。
+`wrangler.jsonc` 的 `name` 必须与面板项目一致，否则会部署到另一个 Worker：
 
-### 绑定域名
+```jsonc
+{
+	"name": "blog",
+	"compatibility_date": "2025-01-01",
+	"compatibility_flags": ["nodejs_compat"],
+	"assets": { "directory": "./dist" },
+	"previews": {}
+}
+```
 
-1. Pages 项目 → Custom domains → 添加 `www.liveroom.dpdns.org`；
-2. 按提示在 DNS 中添加 CNAME（`www` → `<project>.pages.dev`）；
-3. 等待证书签发（通常几分钟），HTTPS 自动开启；
-4. 把根域 `liveroom.dpdns.org` 做 301 跳到 `www`（可选，可用 Cloudflare Redirect Rules）。
+> `previews: {}` 不能省：wrangler 4.147 的 `wrangler preview`（预览部署）会校验该字段，缺了会直接报
+> `Failed: error occurred while running deploy command`。
 
-### 响应头
+### 手动部署（本地）
 
-Cloudflare Pages **不读 `vercel.json`**，缓存与安全头写在 `public/_headers`。改完需重新部署生效。
+```bash
+./command build
+CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=xxx npx wrangler deploy
+```
+
+成功后会输出 `https://blog.<子域>.workers.dev` 与当前 Version ID。
+
+### 域名
+
+- 根域 `liveroom.dpdns.org` 已作为 Workers 自定义域绑定到 Worker `blog`
+- `www.liveroom.dpdns.org`：**Workers & Pages → blog → Settings → Domains & Routes → Add → Custom domain** 添加，Cloudflare 会自动建 DNS 记录并签发证书
+- 备选：DNS 加 `www` CNAME → `liveroom.dpdns.org`（代理开启），再给 Worker 加 Route `www.liveroom.dpdns.org/*`
+
+### 响应头与重定向
+
+`public/_headers` 随 `dist` 一起上传，对 Workers 静态资源同样生效；如需重定向用 `public/_redirects`。`vercel.json` 不生效。
 
 ### 回滚
 
-- 控制台：Pages 项目 → Deployments → 找到上一个成功部署 → `Rollback`；
-- 代码层：`git revert <bad-commit> && git push`，触发一次新构建。
+- 面板：Workers & Pages → blog → Deployments → 选上一个成功版本 → Rollback
+- 代码层：`git revert <bad-commit> && git push` 触发重建
 
 ## 五、Page CMS 后台
 
