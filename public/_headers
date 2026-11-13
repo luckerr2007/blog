@@ -1,0 +1,20 @@
+# Cloudflare Pages 响应头（替代 vercel.json，Pages 不读取 vercel.json）
+# 文档: https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Astro 带 hash 的静态资源，长缓存不可变
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# 构建期生成的字体与图片
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Pagefind 搜索索引与运行时
+/pagefind/*
+  Cache-Control: public, max-age=86400

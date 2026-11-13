@@ -2,14 +2,16 @@
 
 | 项目 | 内容 |
 | --- | --- |
-| 文档版本 | v1.1（已按确决策修订，待最终评审） |
-| 编写日期 | 2025-11-13 |
+| 文档版本 | v1.2（决策落定，M1–M3 已实施，M4 待接入 Cloudflare） |
+| 编写日期 | 2026-11-13 |
 | 作者 / 站点主人 | 桃苏 |
-| 目标仓库 | https://github.com/luckerr2007/blog（当前为空仓库） |
+| 目标仓库 | https://github.com/luckerr2007/blog（已公开） |
 | 基线模板 | [CuteLeaf/Firefly](https://github.com/CuteLeaf/Firefly) v6.16.9（commit `994c0b8`，MIT） |
 | 部署平台 | **Cloudflare Pages**（静态站点，根路径部署） |
-| 评论系统 | **Waline**（需独立后端） |
+| 评论系统 | **本期暂停**（`type: "none"`）；后续可选 Waline |
 | 内容后台 | **Pages CMS**（`app.pagescms.org` + 仓库内 `.pages.yml`） |
+| 线上域名 | **https://www.liveroom.dpdns.org** |
+| 当前进度 | M1 本地部署 ✅ / M2 `command` 脚本 ✅ / M3 二开 ✅ / M4 Cloudflare 接入待执行 |
 | 本地工作目录 | `/Users/luckerr/Documents/项目/dev/blog` |
 
 ---
@@ -76,13 +78,13 @@
 
 ---
 
-## 4. 已确认决策（v1.1）
+## 4. 已确认决策（v1.2）
 
 | ID | 决策点 | 确认结果 | 落地位置 |
 | --- | --- | --- | --- |
-| D1 | 部署平台 | **Cloudflare Pages**，静态输出，`base: "/"` 不变 | Cloudflare 控制台 Git 集成 + 仓库配置 |
+| D1 | 部署平台 | **Cloudflare Pages**，静态输出，`base: "/"` 不变，域名 `https://www.liveroom.dpdns.org` | Cloudflare 控制台 Git 集成 + `siteConfig.site_url` |
 | D2 | 主分支 / 仓库 | `luckerr2007/blog`，`master` | Git / Cloudflare 构建分支 |
-| D3 | 评论系统 | **Waline**（`type: "waline"`），需独立后端 `serverURL` | `src/config/commentConfig.ts` |
+| D3 | 评论系统 | **本期暂停**：`commentConfig.type = "none"`，留言板页面关闭；Waline 作为后续启用方案 | `src/config/commentConfig.ts`、`siteConfig.ts#pages.guestbook` |
 | D4 | 统计 | 暂不启用（预留 `analyticsConfig.ts`） | 二开阶段按需 |
 | D5 | 看板娘 / 音乐播放器 | **全部关闭** | `pioConfig.ts`（spine + live2d 双开关）、`musicConfig.ts`（`showInNavbar`/`showInSidebar` = false） |
 | D6 | 首批文章 | **1 篇：《这个博客是怎么搭建起来的》**（完整记录选型→本地→二开→Waline→Pages CMS→Cloudflare Pages） | `src/content/posts/` |
@@ -91,13 +93,14 @@
 | D9 | 作者署名 | **桃苏**（站点标题 / profile / 页脚 / 文章默认 `author`） | `siteConfig.ts`、`profileConfig.ts`、`FooterConfig.html`、`.pages.yml` 默认值 |
 | D10 | 内容后台 | **Pages CMS**（GitHub App + `.pages.yml`） | 仓库根 `.pages.yml` |
 
-### 4.1 仍待你提供 / 确认（阻塞线上部署，不阻塞 M1–M3）
-| 编号 | 事项 | 为什么必须你给 | 默认占位 |
+### 4.1 已确认的补充信息（v1.2）
+
+| 编号 | 事项 | 确认结果 | 对实现的影响 |
 | --- | --- | --- | --- |
-| Q1 | 最终域名（如 `blog.example.com` 或 `xxx.pages.dev`） | Cloudflare Pages 绑定域名需你在控制台操作；`siteConfig.site_url`、sitemap、OG、RSS 都依赖它 | 暂用 `https://<project>.pages.dev`，域名确定后一处改 |
-| Q2 | Waline 后端托管在哪（Cloudflare Workers + D1 / Vercel 一键模板 / 自有服务器） | 需要你的 Cloudflare 或 Vercel 账号授权，且涉及数据库 | 建议 **Cloudflare Workers + D1**（与 Pages 同平台、免费额度够用）；若你已有 Vercel 账号，Vercel 一键最快 |
-| Q3 | 仓库是否设为 **Public** | Pages CMS 的 GitHub App 与 Waline 的 Giscus 类集成在私有仓库上受限；Pages CMS 需可读仓库 | 建议 Public（MIT 模板本身开源） |
-| Q4 | 是否保留 GitHub Actions（`.github/workflows/deploy.yml`） | Cloudflare Pages 用 Git 集成即可自动部署，Actions 会变成冗余；保留可作构建体检 | 建议**移除部署 workflow**，仅保留 `biome.yml`/`build.yml` 作为质量门禁 |
+| Q1 | 最终域名 | **`www.liveroom.dpdns.org`** | 已写入 `siteConfig.site_url`；sitemap / RSS / OG / canonical 全部据此生成 |
+| Q2 | Waline 后端 | **本期不做**（评论暂停） | 前端维持 `type: "none"`，不引入后端依赖 |
+| Q3 | 仓库可见性 | **Public** | Pages CMS 的 GitHub App 可正常授权 |
+| Q4 | GitHub Actions | **保留 `deploy.yml`** | 不作为部署主链路（主链路是 Cloudflare Pages Git 集成），保留作构建体检 |
 
 ---
 
@@ -174,13 +177,13 @@
 8. 踩坑记录（pnpm 版本、date 字段格式、中文文件名、base 与绝对链接）。
 - frontmatter：`category: 博客指南`、`tags: [Astro, Firefly, Cloudflare Pages, Waline, Pages CMS]`、`draft: false`、`pinned: true`。
 
-#### M3-5 Waline 评论接入（P0）
-- `commentConfig.ts`：`type: "waline"`；`waline.serverURL` 指向已部署后端（Q2）；`lang: "zh-CN"`；`login: "enable"`；`visitorCount: true`；保留统一表情包源。
-- 后端（推荐 Cloudflare Workers + D1）：创建 D1 库 → 部署 Waline Worker → 绑定自定义域或 `*.workers.dev` → 初始化管理员账号 → 配置 `SERVER_URL`、`SITE_NAME`、`SITE_URL`、`SECURE_DOMAINS`（站点域名，含 `pages.dev` 预览域）→ 开启评论审核与 IP 限流。
-- 文章页 + 留言板页均可用；未登录可读、可匿名/第三方登录评论；移动端样式正常。
-- 验收：发表一条评论 → 后台可见 → 前端刷新可见；垃圾评论拦截规则生效。
+#### M3-5 评论：本期暂停（P1 后续）
 
-#### M3-6 Pages CMS 后台（P0）
+- 决策：**暂时关闭评论区**，`commentConfig.ts` 保持 `type: "none"`，`siteConfig.pages.guestbook = false`。
+- 后续启用路径（已写入 `docs/OPERATIONS.md`）：部署 Waline 后端（Cloudflare Workers + D1 或 Vercel 一键模板）→ 配置 `SERVER_URL` / `SITE_NAME` / `SITE_URL` / `SECURE_DOMAINS` → 前端把 `type` 改为 `"waline"` 并填 `waline.serverURL` → 重新打开留言板页面开关。
+- 验收（启用时）：发表评论 → 后台可见 → 前端刷新可见；后端不可达时页面不报错。
+
+#### M3-6 Pages CMS 后台（P0，配置已完成，待账号授权）
 - 仓库根新增 `.pages.yml`：
   - `media`：`public/assets` → `/assets`（站点图片）；`src/content/posts/images`（文章配图，验证 Astro 能否解析）。
   - `content` 集合：
@@ -350,5 +353,5 @@ blog/
 ## 附：变更记录
 | 版本 | 日期 | 变更 |
 | --- | --- | --- |
-| v1.0 | 2025-11-13 | 首版：GitHub Pages + Giscus + M0–M4 |
-| v1.1 | 2025-11-13 | 按确认结果修订：部署改 **Cloudflare Pages**（移除 base 子路径改造）、评论改 **Waline**、**关闭看板娘与音乐播放器**、作者署名 **桃苏**、新增 **Pages CMS 后台**（`.pages.yml`）、首批文章改为《这个博客是怎么搭建起来的》、新增 `_headers` 与 Q1–Q4 待办、风险扩至 R1–R12、工期 7 → 8.8 人日 |
+| v1.0 | 2026-11-13 | 首版：GitHub Pages + Giscus + M0–M4 |
+| v1.2 | 2026-11-13 | 决策落定并进入实施：域名 `www.liveroom.dpdns.org`、**评论暂停**（`type: "none"`，Waline 保留为后续方案）、仓库已 Public、保留 `.github/workflows/deploy.yml`；M1（本地部署）与 M2（`command` 脚本）已完成并实测；M3 已完成站点身份/关闭看板娘与音乐/内容骨架/首篇文章/`.pages.yml`/`public/_headers`/四份文档；修正字体 CDN 不可达问题 |
