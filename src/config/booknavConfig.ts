@@ -75,11 +75,10 @@ export const booknavConfig: BooknavGroup[] = [
 		weight: 90,
 		items: [
 			{
-				title: "Firefly",
-				url: "https://github.com/CuteLeaf/Firefly",
-				desc: "清晰美观的 Astro 个人博客主题模板",
-				icon: "/favicon/firefly-32.png",
-				weight: 10,
+				title: "桃苏的博客",
+				url: "https://github.com/luckerr2007/blog",
+				desc: "本站源码仓库",
+				icon: "/favicon/icon-32.png",
 			},
 		],
 	},
