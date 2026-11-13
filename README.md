@@ -1,6 +1,6 @@
 # 桃苏的博客
 
-基于 [Firefly](https://github.com/CuteLeaf/Firefly)（v6.16.9，MIT）二次开发的个人博客，使用 Astro 静态生成，部署在 Cloudflare Pages。
+个人博客源码，Astro 静态生成，部署在 Cloudflare Pages。
 
 - 线上站点：https://www.liveroom.dpdns.org
 - 代码仓库：https://github.com/luckerr2007/blog
@@ -41,7 +41,7 @@ nvm use && corepack enable
 | [docs/WRITING.md](./docs/WRITING.md) | 写作规范、frontmatter 全字段、发布流程 |
 | [docs/OPERATIONS.md](./docs/OPERATIONS.md) | 启停脚本、构建、Cloudflare Pages 部署与回滚 |
 | [docs/PAGES_CMS.md](./docs/PAGES_CMS.md) | Pages CMS 后台接入与字段对照 |
-| [docs/CUSTOMIZATION.md](./docs/CUSTOMIZATION.md) | 相对上游模板的全部改动 |
+| [docs/CUSTOMIZATION.md](./docs/CUSTOMIZATION.md) | 站点定制与运维要点 |
 
 ## 目录速览
 
@@ -51,7 +51,7 @@ command              # 一键启停脚本
 public/_headers      # Cloudflare Pages 响应头
 src/config/          # 站点配置（标题、导航、页脚、字体…）
 src/content/posts/   # 文章
-src/content/_archive/# 模板示例内容（不参与构建）
+src/content/_archive/# 参考内容（不参与构建）
 docs/                # 项目文档
 .run/                # 运行时 pid/日志（git 忽略）
 ```
@@ -63,13 +63,10 @@ docs/                # 项目文档
 | 本地开发 / 构建 | ✅ 通过（`pnpm check` 0 error，构建约 100 秒） |
 | 一键脚本 | ✅ 全部子命令实测通过 |
 | 看板娘 / 音乐播放器 | ⛔ 已关闭 |
-| 评论区 | ⏸ 暂停（`commentConfig.type = "none"`），需要时接 Waline |
-| Pages CMS | 🧩 配置已就绪（`.pages.yml`），需在 app.pagescms.org 授权接入 |
+| 评论区 | ⏸ 暂停，需要时再接 |
+| Pages CMS | 🧩 配置已就绪（`.pages.yml`） |
 | Cloudflare Pages | 🚀 待接入仓库并绑定域名 |
 
-## 致谢
+## 版权
 
-- 主题：[Firefly](https://github.com/CuteLeaf/Firefly) by CuteLeaf
-- 上游模板：[Fuwari](https://github.com/saicaca/fuwari) by saicaca
-
-主题采用 MIT 协议，本项目保留原始 `LICENSE` 与版权声明。若你要参考本项目的组件设计，请同样注明来自 Firefly。
+© 2026 桃苏 · 保留所有权利

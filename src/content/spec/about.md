@@ -7,7 +7,7 @@
 ## 这个站
 
 - 框架：[Astro](https://astro.build)
-- 主题：[Firefly](https://github.com/CuteLeaf/Firefly)（基于 [Fuwari](https://github.com/saicaca/fuwari) 二次开发，MIT 协议）
+- 主题：Firefly
 - 部署：Cloudflare Pages
 - 搜索：Pagefind（构建期生成索引）
 - 内容：Markdown / MDX，图片与文章同目录管理

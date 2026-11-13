@@ -39,12 +39,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 				external: true,
 				icon: "fa7-brands:github",
 			},
-			{
-				name: "Firefly 主题",
-				url: "https://github.com/CuteLeaf/Firefly",
-				external: true,
-				icon: "material-symbols:auto-awesome",
-			},
 		],
 	});
 

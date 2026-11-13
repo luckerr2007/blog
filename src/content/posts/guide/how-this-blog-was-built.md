@@ -91,7 +91,7 @@ pnpm install
 | 页面开关 | `siteConfig.ts` 的 `pages`：友链、留言板、项目、相册、书签、打赏全部关掉，只留动态 |
 | 音乐播放器 | `musicConfig.ts`：模板没有总开关，要同时关 `showInNavbar` 和 `showInSidebar` |
 | 看板娘 | `pioConfig.ts`：`spineModelConfig.enable` 与 `live2dWidgetConfig.enable` 都是 `false` |
-| 页脚 | `FooterConfig.html`：版权 + Powered by Astro & Firefly + 备案占位 |
+| 页脚 | `FooterConfig.html`：版权 + 备案占位 |
 | 内容 | 模板示例文章/动态/项目整体移到 `src/content/_archive/`，不参与构建 |
 
 关掉音乐和看板娘之后，首屏不再加载 Live2D 模型和播放器资源，页面明显更轻。
@@ -169,4 +169,4 @@ https://cdn.jsdelivr.net/fontsource/fonts/zen-maru-gothic@5.3.1/latin-300-normal
 - 需要互动时再启评论；
 - 域名已经指向 `www.liveroom.dpdns.org`，HTTPS 由 Cloudflare 自动签发。
 
-> 本站基于 [Firefly](https://github.com/CuteLeaf/Firefly) 主题二次开发，主题采用 MIT 协议，感谢原作者 CuteLeaf 与 Fuwari 作者 saicaca。
+> 本文记录的是本站真实搭建过程，涉及的工具与版本均可在 `package.json` 中核对。
