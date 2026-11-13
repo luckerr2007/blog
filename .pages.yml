@@ -1,25 +1,21 @@
-# Pages CMS 内容模型（https://app.pagescms.org）
+# Pages CMS 2.x 配置（https://app.pagescms.org）
 #
-# 作用：在网页端 / 手机上可视化编辑仓库里的 Markdown，改动会以 commit 形式写回仓库，
-#       Cloudflare Pages 检测到 push 后自动重建。
+# 作用：网页端 / 手机端可视化编辑仓库里的 Markdown，改动以 commit 写回仓库，
+#       Cloudflare 检测到 push 后自动重建。
 #
-# 三条硬规则（改之前先读）：
+# 三条硬规则：
 # 1) 字段必须与 src/content.config.ts 的 zod schema 对齐，否则「保存成功但构建报错」；
-# 2) 有正文的集合必须声明 body，否则保存时正文会被丢弃；
-# 3) 主题会读取但你不常改的字段，必须声明 hidden: true，否则整文件重写时被丢掉。
+# 2) 有正文的集合必须声明 body（body 是特殊键，映射 frontmatter 之下的正文）；
+# 3) 主题会读但你不常改的字段，声明 hidden: true，否则整文件重写时被丢弃。
+#
+# 注意：2.x 的字段没有 list: true。字符串数组（如 tags）只能用
+#       type: select + options.multiple，且选项必须预定义在下面的 values 里。
 
 media:
-  - name: assets
-    label: 站点图片（public/assets）
-    input: public/assets
-    output: /assets
-    categories: [image]
-
-  - name: post-images
-    label: 文章配图（src/content/posts/images）
-    input: src/content/posts/images
-    output: /src/content/posts/images
-    categories: [image]
+  input: public/assets
+  output: /assets
+  rename: safe
+  categories: [image]
 
 content:
   # ── 文章 ───────────────────────────────────────────────
@@ -28,7 +24,7 @@ content:
     type: collection
     path: src/content/posts
     format: yaml-frontmatter
-    # 中文会被 slugify 剔除，必须让用户手动填 ASCII 文件名
+    # 中文标题会被 slugify 剔除，必须手动填 ASCII 文件名
     filename:
       template: "{year}-{month}-{day}-{primary}.md"
       field: create
@@ -36,8 +32,11 @@ content:
     exclude: ["images"]
     view:
       primary: title
-      sort: ["published desc", "title asc"]
       fields: [title, published, category, draft, pinned]
+      sort: [published, title]
+      default:
+        sort: published
+        order: desc
     fields:
       - name: title
         label: 标题
@@ -52,6 +51,13 @@ content:
           time: false
           format: yyyy-MM-dd
 
+      - name: updated
+        label: 更新日期（可选）
+        type: date
+        default: ""
+        options:
+          time: false
+          format: yyyy-MM-dd
       - name: description
         label: 摘要
         type: text
@@ -60,12 +66,15 @@ content:
       - name: image
         label: 封面图
         type: string
-        description: 相对文章目录（如 ./cover.webp）或完整 URL；留空则用站点默认封面
+        description: 填 /assets/xxx.webp（媒体库上传后的路径），留空则用默认封面
 
+      # 2.x 没有 list，字符串数组用 select + multiple，新标签需在此追加
       - name: tags
         label: 标签
-        type: string
-        list: true
+        type: select
+        options:
+          multiple: true
+          values: [Astro, Firefly, Cloudflare, Pages CMS, Waline, 建站, 博客, 前端, 工具, 折腾]
 
       - name: category
         label: 分类
@@ -98,60 +107,53 @@ content:
         label: 正文
         type: rich-text
         required: true
+        options:
+          format: markdown
+          rename: true
+          switcher: true
 
       # ── 隐藏字段（保留不丢）────────────────────────────
       - name: author
-        label: 作者
         type: string
         hidden: true
 
       - name: lang
-        label: 语言
         type: string
         hidden: true
 
       - name: sourceLink
-        label: 来源链接
         type: string
         hidden: true
 
       - name: licenseName
-        label: 许可证名称
         type: string
         hidden: true
 
       - name: licenseUrl
-        label: 许可证链接
         type: string
         hidden: true
 
       - name: password
-        label: 访问密码
         type: string
         hidden: true
 
       - name: passwordHint
-        label: 密码提示
         type: string
         hidden: true
 
       - name: prevTitle
-        label: 上一篇标题（主题内部）
         type: string
         hidden: true
 
       - name: prevSlug
-        label: 上一篇 slug（主题内部）
         type: string
         hidden: true
 
       - name: nextTitle
-        label: 下一篇标题（主题内部）
         type: string
         hidden: true
 
       - name: nextSlug
-        label: 下一篇 slug（主题内部）
         type: string
         hidden: true
 
@@ -166,8 +168,11 @@ content:
       field: create
     view:
       primary: published
-      sort: ["published desc"]
       fields: [published, pinned, location]
+      sort: [published]
+      default:
+        sort: published
+        order: desc
     fields:
       - name: published
         label: 发布时间
@@ -190,6 +195,8 @@ content:
         label: 正文
         type: rich-text
         required: true
+        options:
+          format: markdown
 
   # ── 静态页面（关于等）─────────────────────────────────
   - name: spec
@@ -197,15 +204,15 @@ content:
     type: collection
     path: src/content/spec
     format: yaml-frontmatter
-    view:
-      primary: ""
     fields:
       - name: body
         label: 正文
         type: rich-text
         required: true
+        options:
+          format: markdown
 
 settings:
   content:
-    # 整文件重写，配合 hidden 字段避免残留脏字段
+    # false = 按 schema 整文件重写（配合 hidden 字段避免残留脏字段）
     merge: false
