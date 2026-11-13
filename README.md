@@ -65,7 +65,7 @@ docs/                # 项目文档
 | 看板娘 / 音乐播放器 | ⛔ 已关闭 |
 | 评论区 | ⏸ 暂停，需要时再接 |
 | Pages CMS | 🧩 配置已就绪（`.pages.yml`） |
-| Cloudflare Pages | 🚀 待接入仓库并绑定域名 |
+| Cloudflare Workers | ✅ 已上线 https://www.liveroom.dpdns.org |
 
 ## 版权
 

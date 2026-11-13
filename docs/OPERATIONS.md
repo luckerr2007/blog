@@ -105,9 +105,9 @@ CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=xxx npx wrangler deploy
 
 ### 域名
 
-- 根域 `liveroom.dpdns.org` 已作为 Workers 自定义域绑定到 Worker `blog`
-- `www.liveroom.dpdns.org`：**Workers & Pages → blog → Settings → Domains & Routes → Add → Custom domain** 添加，Cloudflare 会自动建 DNS 记录并签发证书
-- 备选：DNS 加 `www` CNAME → `liveroom.dpdns.org`（代理开启），再给 Worker 加 Route `www.liveroom.dpdns.org/*`
+- 根域 `liveroom.dpdns.org` 与 `www.liveroom.dpdns.org` 均已绑定到 Worker `blog`（Custom Domain，HTTPS 自动签发）
+- 新增域名：Workers & Pages → blog → Settings → Domains & Routes → Add → Custom domain 填域名即可
+- 规范域名（canonical / sitemap / RSS）为 `https://www.liveroom.dpdns.org`，改域名时同步改 `siteConfig.site_url`
 
 ### 响应头与重定向
 

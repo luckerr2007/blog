@@ -11,7 +11,7 @@
 | 评论系统 | **本期暂停**（`type: "none"`）；后续可选 Waline |
 | 内容后台 | **Pages CMS**（`app.pagescms.org` + 仓库内 `.pages.yml`） |
 | 线上域名 | **https://www.liveroom.dpdns.org** |
-| 当前进度 | M1 本地部署 ✅ / M2 `command` 脚本 ✅ / M3 二开 ✅ / M4 Cloudflare 接入待执行 |
+| 当前进度 | M1 ✅ / M2 ✅ / M3 ✅ / M4 ✅ **已上线 Cloudflare Workers**（`www.liveroom.dpdns.org`） |
 | 本地工作目录 | `/Users/luckerr/Documents/项目/dev/blog` |
 
 ---
@@ -355,3 +355,4 @@ blog/
 | --- | --- | --- |
 | v1.0 | 2026-11-13 | 首版：GitHub Pages + Giscus + M0–M4 |
 | v1.2 | 2026-11-13 | 决策落定并进入实施：域名 `www.liveroom.dpdns.org`、**评论暂停**（`type: "none"`，Waline 保留为后续方案）、仓库已 Public、保留 `.github/workflows/deploy.yml`；M1（本地部署）与 M2（`command` 脚本）已完成并实测；M3 已完成站点身份/关闭看板娘与音乐/内容骨架/首篇文章/`.pages.yml`/`public/_headers`/四份文档；修正字体 CDN 不可达问题 |
+| v1.3 | 2026-11-13 | 实际上线形态修正为 **Cloudflare Workers（静态资源）**（非 Pages）：Worker 名 `blog`，`wrangler.jsonc` 补 `previews: {}`，根域与 `www` 均绑定 Custom Domain；头像与 favicon 换成自定义素材，修复页脚版权重复 |
