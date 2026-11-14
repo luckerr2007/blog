@@ -74,7 +74,31 @@ content:
         type: select
         options:
           multiple: true
-          values: [Astro, Firefly, Cloudflare, Pages CMS, Waline, 建站, 博客, 前端, 工具, 折腾]
+          values:
+            - Astro
+            - Firefly
+            - Cloudflare
+            - Cloudflare Pages
+            - Cloudflare Workers
+            - Pages CMS
+            - Waline
+            - 建站
+            - 博客
+            - 前端
+            - 工具
+            - 折腾
+            - MVSEP
+            - 网易云
+            - 音频分离
+            - Node.js
+            - LEMOM
+            - MIDI
+            - MuScriptor
+            - Apple Silicon
+            - MusicParser
+            - FastAPI
+            - 音频解析
+            - 本地服务
 
       - name: category
         label: 分类

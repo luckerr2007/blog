@@ -72,6 +72,7 @@
 - `vercel.json`：保留但 Cloudflare Pages 不读取，实际生效的是 `public/_headers`
 - `wrangler.jsonc`：保留（仅在使用 Workers 适配器时才相关）
 - `CLAUDE.md` / `AGENTS.md`：上游的 AI 协作说明，可按需删除
+- `.pages.yml` 的 `tags.values` 必须覆盖文章实际使用的全部标签（含 MVSEP、网易云、LEMOM、MIDI、MusicParser 等），否则 Pages CMS 保存时会丢掉未列出的标签
 
 ## 五、升级模板时的建议流程
 
