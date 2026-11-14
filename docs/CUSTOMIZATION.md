@@ -23,7 +23,7 @@
 - `site_url` → `https://www.taosu.dpdns.org`
 - `description` / `keywords` → 个人站表述
 - `navbar.title` → 桃苏的博客；`navbar.logo` 改为图标 `fa7-solid:seedling`（不再依赖模板的 firefly-*.png）
-- `siteStartDate` → `2026-11-13`
+- `siteStartDate` → `2022-08-14`
 - `pages`：`friends` / `guestbook` / `projects` / `gallery` / `booknav` / `sponsor` 全部 `false`，仅 `dynamic` 保留
 
 ### profileConfig.ts
@@ -60,6 +60,7 @@
 | --- | --- |
 | 模板示例内容归档 | `src/content/posts`、`dynamic`、`projects` → `src/content/_archive/`，不参与构建 |
 | 新文章 | `src/content/posts/guide/how-this-blog-was-built.md` |
+| 旧文补档 | `src/content/posts/misc/` 下的 2022–2026 年文章，用于补全归档时间线 |
 | 新动态 | `src/content/dynamic/2026-11-13-213000.md` |
 | 关于页 | `src/content/spec/about.md` 重写为桃苏版本 |
 | 项目占位 | `src/content/projects/taosu-blog.md`（项目页关闭，仅消除 glob loader 空目录告警） |

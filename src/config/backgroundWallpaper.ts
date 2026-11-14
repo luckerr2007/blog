@@ -63,6 +63,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			titleSize: "4.5rem",
 			// 主页横幅副标题
 			subtitle: [
+				"从 2022 年写到现在",
 				"记录技术、生活与思考",
 				"把踩过的坑写下来，下次少走一遍",
 				"能复现的步骤，才值得写进博客",

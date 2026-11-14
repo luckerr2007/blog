@@ -24,6 +24,12 @@ const showTitle = widgetConfig?.showTitle !== false;
 // 从配置中获取站点开始日期
 const siteStartDate = siteConfig.siteStartDate || "2025-01-01";
 
+// SSR 先给出一个可读的运行天数，客户端脚本会再按当前时间校正
+const runningDays = Math.ceil(
+	Math.abs(Date.now() - new Date(siteStartDate).getTime()) /
+		(1000 * 60 * 60 * 24),
+);
+
 // 获取所有文章
 const posts = await getSortedPosts();
 const categories = await getCategoryList();
@@ -95,7 +101,7 @@ const stats = [
 	{
 		icon: "material-symbols:calendar-clock-outline",
 		label: i18n(I18nKey.siteStatsRunningDays),
-		value: 0, // 将由客户端更新
+		value: runningDays,
 		suffix: i18n(I18nKey.siteStatsDays).replace("{days}", ""),
 		dynamic: true,
 		id: "running-days",

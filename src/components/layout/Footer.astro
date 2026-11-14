@@ -1,10 +1,15 @@
 ---
 import fs from "node:fs";
 import path from "node:path";
-import { profileConfig } from "@/config";
+import { profileConfig, siteConfig } from "@/config";
 import { url } from "@/utils/url-utils";
 
 const currentYear = new Date().getFullYear();
+const startYear = siteConfig.siteStartDate
+	? new Date(siteConfig.siteStartDate).getFullYear()
+	: currentYear;
+const copyrightYears =
+	startYear < currentYear ? `${startYear}–${currentYear}` : `${currentYear}`;
 
 // 读取FooterConfig.html文件内容
 let customFooterHtml = "";
@@ -40,7 +45,7 @@ try {
 				{customFooterHtml && <div set:html={customFooterHtml} />}
 			</div>
 			<div class="mx-0.5 my-2.5 flex gap-x-2 gap-y-2.5 justify-center flex-wrap">
-				© <span id="copyright-year">{currentYear}</span>
+				© <span id="copyright-year">{copyrightYears}</span>
 				{profileConfig.name} · 保留所有权利
 				<span aria-hidden="true">/</span>
 				<a

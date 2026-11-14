@@ -2,6 +2,8 @@
 
 个人博客源码，Astro 静态生成，部署在 Cloudflare Workers。
 
+博客始于 2022 年 8 月，2026 年用 Astro + Firefly 重建。
+
 - 线上站点：https://www.taosu.dpdns.org
 - 代码仓库：https://github.com/luckerr2007/blog
 

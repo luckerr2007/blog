@@ -12,7 +12,7 @@ export const profileConfig: ProfileConfig = {
 	name: "桃苏",
 
 	// 个人签名
-	bio: "记录技术、生活与思考。",
+	bio: "记录技术、生活与思考。始于 2022 年 8 月。",
 
 	// 链接配置
 	// 已经预装的图标集：fa7-brands，fa7-regular，fa7-solid，material-symbols，simple-icons

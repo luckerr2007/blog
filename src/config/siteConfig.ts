@@ -52,7 +52,7 @@ export const siteConfig: SiteConfig = {
 
 	// 站点描述
 	description:
-		"桃苏的个人博客，记录技术、生活与思考。基于 Astro 与 Firefly 主题构建，关注前端、工具链与日常折腾。",
+		"桃苏的个人博客，始于 2022 年 8 月，记录技术、生活与思考。基于 Astro 与 Firefly 主题构建，关注前端、工具链与日常折腾。",
 
 	// 站点关键词
 	keywords: ["桃苏", "博客", "Astro", "Firefly", "静态博客", "技术笔记"],
@@ -118,7 +118,7 @@ export const siteConfig: SiteConfig = {
 	},
 
 	// 站点开始日期，用于统计运行天数
-	siteStartDate: "2026-11-13",
+	siteStartDate: "2022-08-14",
 
 	// 站点时区（IANA 时区字符串），用于格式化bangumi、rss里的构建日期时间等等..
 	// 示例："Asia/Shanghai", "UTC", 如果为空，则按照构建服务器的时区进行时区转换

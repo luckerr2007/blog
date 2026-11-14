@@ -141,7 +141,8 @@ Tailwind 4 有两个细节。第一，`-translate-y-1` 这类工具类落在独�
 - `src/components/pages/dynamic/DynamicFeed.svelte`：动态流骨架；
 - `src/components/common/GridSkeleton.svelte`：媒体网格骨架统一 shimmer；
 - `src/components/pages/AdvancedSearch.svelte`、`controls/Search.svelte`：搜索加载态和面板过渡；
-- `src/components/layout/PostPage.astro`、`NavMenuPanel.astro`：零散过渡和布局修正。
+- `src/components/layout/PostPage.astro`、`NavMenuPanel.astro`：零散过渡和布局修正；
+- `src/components/layout/Footer.astro`：版权年份改为站点起始年到当前年。
 
 修改时只动必要行，不整文件格式化，在关键位置留一行注释说明与上游的差异。否则下次 `git merge upstream/master` 会产生大量无意义冲突。
 
