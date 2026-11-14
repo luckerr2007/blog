@@ -85,3 +85,34 @@ pnpm install && pnpm check && ./command build
 ```
 
 升级后必须复查：字体 provider 是否被改回 `fontsource`、`pages` 开关是否被重置、`.pages.yml` 字段是否与新的 zod schema 对齐。
+
+## 六、首页视觉与每日一言（v1.4）
+
+### 关闭壁纸背景
+- `backgroundWallpaper.ts`：`mode: "none"`、`playerEnable: false`、`src.desktop` / `src.mobile` → `[]`，水波纹与渐变（桌面 / 移动）全部 `false`
+- `displaySettingsConfig.ts` 未改：面板总开关本就 `false`，运行时不会切回壁纸模式
+- 壁纸图片仍留在 `src/assets/images/{Desktop,Mobile}Wallpaper/`，因为没有任何组件引用，不参与构建；想恢复时把路径填回 `src` 并把 `mode` 改回 `banner`
+
+### 每日一言（新增）
+
+| 文件 | 作用 |
+| --- | --- |
+| `src/types/hitokotoConfig.ts` | 配置类型（接口列表、超时、缓存时长、兜底句子） |
+| `src/config/hitokotoConfig.ts` | 一言接口与兜底文案（默认分类 i 诗词 / k 哲学） |
+| `src/utils/hitokoto-client.ts` | 浏览器端取数：localStorage 缓存（默认 12h）→ 依次请求接口 → 本地兜底 |
+| `src/components/common/HitokotoQuote.astro` | 展示组件（`hero` / `widget` 两种变体）+「换一句」按钮 |
+| `src/components/widget/Hitokoto.astro` | 侧边栏小组件 |
+| `src/components/layout/HomeHero.astro` | 首页顶部欢迎区（站点标题 + 打字机副标题 + 每日一言） |
+
+- 新增组件类型 `hitokoto`：`src/types/sidebarConfig.ts` 的 `WidgetComponentType`、`src/components/layout/SideBar.astro` 的 `componentMap`
+- `sidebarConfig.ts`：移除 `music` 组件，左栏与移动端底部各新增 `hitokoto`
+- `src/pages/[...page].astro`：仅第 1 页渲染 `<HomeHero />`
+- 请求带时间戳参数绕开一言 CDN 的 URL 缓存，保证「换一句」每次都会换
+- SSR 先输出按日期轮换的兜底句子，接口失败或断网时页面保持可读
+
+### 文案清理
+- `announcementConfig.ts`：示例公告 → 本站说明
+- `backgroundWallpaper.ts` 的 `homeText`：模板英文诗句 → 中文副标题
+- `siteConfig.ts`：bilibili / bangumi / vndb / mal 的 ID 与 Client ID 清空（对应页面本就关闭）
+- `commentConfig.ts`：Giscus 仓库与分类 ID 清空（`type: "none"`）
+- `friendsConfig.ts` / `galleryConfig.ts` / `sponsorConfig.ts` / `booknavConfig.ts`：删除 CuteLeaf 演示友链、相册、打赏方式与书签，保留字段格式注释

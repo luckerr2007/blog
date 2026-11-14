@@ -1,0 +1,275 @@
+---
+// 每日一言展示组件（首页顶部 + 侧边栏共用）
+// SSR 先渲染按日期轮换的本地句子，客户端再尝试用一言接口替换，失败则保持不变，
+// 因此首屏不会空白，也不会因为接口挂掉而破版。
+import { Icon } from "astro-icon/components";
+import { hitokotoConfig } from "@/config/hitokotoConfig";
+import { getDailyFallback, getQuoteSourceLabel } from "@/utils/hitokoto-client";
+
+interface Props {
+	// hero：首页顶部，居中大字；widget：侧边栏，紧凑排版
+	variant?: "hero" | "widget";
+	// 是否显示出处
+	showSource?: boolean;
+	class?: string;
+}
+
+const { variant = "widget", showSource = true, class: className } = Astro.props;
+
+const config = hitokotoConfig;
+const initial = getDailyFallback(config);
+const initialSource = initial ? getQuoteSourceLabel(initial) : "";
+---
+
+{config.enable && initial && (
+	<div
+		class:list={["hitokoto-quote", `hitokoto-quote-${variant}`, className]}
+		data-hitokoto
+		data-hitokoto-variant={variant}
+		role="group"
+		aria-label={config.title}
+	>
+		<div class="hitokoto-body">
+			<p
+				class="hitokoto-text text-neutral-700 dark:text-neutral-300"
+				data-hitokoto-text
+				aria-live="polite"
+			>
+				{initial.text}
+			</p>
+			{showSource && (
+				<p class="hitokoto-source" data-hitokoto-source>
+					{initialSource}
+				</p>
+			)}
+		</div>
+		<button
+			type="button"
+			class="hitokoto-refresh"
+			data-hitokoto-refresh
+			title="换一句"
+			aria-label="换一句"
+		>
+			<Icon name="material-symbols:refresh-rounded" class="hitokoto-refresh-icon" aria-hidden="true" />
+		</button>
+	</div>
+)}
+
+<style>
+	.hitokoto-quote {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+
+	.hitokoto-body {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.hitokoto-text {
+		margin: 0;
+		text-wrap: pretty;
+	}
+
+	.hitokoto-text::before {
+		content: "「";
+	}
+
+	.hitokoto-text::after {
+		content: "」";
+	}
+
+	.hitokoto-source {
+		margin: 0.35rem 0 0;
+		opacity: 0.75;
+	}
+
+	.hitokoto-source:empty {
+		display: none;
+	}
+
+	.hitokoto-refresh {
+		flex: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		height: 1.75rem;
+		width: 1.75rem;
+		border-radius: 9999px;
+		color: var(--primary);
+		opacity: 0.6;
+		transition:
+			opacity 0.2s ease,
+			background-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.hitokoto-refresh:hover {
+		opacity: 1;
+		background-color: color-mix(in oklab, var(--primary) 12%, transparent);
+	}
+
+	.hitokoto-refresh:active {
+		transform: scale(0.9);
+	}
+
+	.hitokoto-refresh-icon {
+		font-size: 1.1rem;
+	}
+
+	[data-hitokoto-state="loading"] .hitokoto-refresh-icon {
+		animation: hitokoto-spin 0.9s linear infinite;
+	}
+
+	[data-hitokoto-state="loading"] .hitokoto-text {
+		opacity: 0.55;
+	}
+
+	.hitokoto-text,
+	.hitokoto-source {
+		transition: opacity 0.25s ease;
+	}
+
+	.hitokoto-updated .hitokoto-text,
+	.hitokoto-updated .hitokoto-source {
+		animation: hitokoto-fade-in 0.45s ease both;
+	}
+
+	/* ── 首页 hero 变体 ───────────────────────────── */
+	.hitokoto-quote-hero {
+		max-width: 46rem;
+		margin: 0 auto;
+		text-align: center;
+		align-items: center;
+	}
+
+	.hitokoto-quote-hero .hitokoto-text {
+		font-size: 1.05rem;
+		line-height: 1.9;
+	}
+
+	.hitokoto-quote-hero .hitokoto-source {
+		font-size: 0.85rem;
+	}
+
+	/* ── 侧边栏变体 ───────────────────────────────── */
+	.hitokoto-quote-widget .hitokoto-text {
+		font-size: 0.9rem;
+		line-height: 1.8;
+	}
+
+	.hitokoto-quote-widget .hitokoto-source {
+		font-size: 0.75rem;
+		text-align: right;
+	}
+
+	@keyframes hitokoto-fade-in {
+		from {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes hitokoto-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hitokoto-updated .hitokoto-text,
+		.hitokoto-updated .hitokoto-source,
+		[data-hitokoto-state="loading"] .hitokoto-refresh-icon {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	import { hitokotoConfig } from "@/config/hitokotoConfig";
+	import {
+		getQuoteSourceLabel,
+		loadQuote,
+	} from "@/utils/hitokoto-client";
+	import type { HitokotoQuote } from "@/types/hitokotoConfig";
+
+	const selector = "[data-hitokoto]";
+	// 首页顶部与侧边栏可能同时存在，共享同一个请求，避免重复打接口
+	let pending: Promise<HitokotoQuote | null> | null = null;
+
+	const getRoots = (): HTMLElement[] =>
+		Array.from(document.querySelectorAll<HTMLElement>(selector));
+
+	const renderQuote = (root: HTMLElement, quote: HitokotoQuote): void => {
+		const textElement = root.querySelector<HTMLElement>("[data-hitokoto-text]");
+		const sourceElement =
+			root.querySelector<HTMLElement>("[data-hitokoto-source]");
+		if (textElement) textElement.textContent = quote.text;
+		if (sourceElement) {
+			sourceElement.textContent = getQuoteSourceLabel(quote);
+		}
+		root.classList.remove("hitokoto-updated");
+		// 强制重排，保证连续点击「换一句」时动画都会重放
+		void root.offsetWidth;
+		root.classList.add("hitokoto-updated");
+	};
+
+	const setLoading = (loading: boolean): void => {
+		for (const root of getRoots()) {
+			root.dataset.hitokotoState = loading ? "loading" : "ok";
+			const button = root.querySelector<HTMLButtonElement>(
+				"[data-hitokoto-refresh]",
+			);
+			if (button) button.disabled = loading;
+		}
+	};
+
+	const applyQuote = (quote: HitokotoQuote | null): void => {
+		if (!quote) return;
+		for (const root of getRoots()) renderQuote(root, quote);
+	};
+
+	const ensureQuote = async (force: boolean): Promise<void> => {
+		if (!force && pending) {
+			applyQuote(await pending);
+			return;
+		}
+		setLoading(true);
+		pending = loadQuote(hitokotoConfig, { force });
+		try {
+			applyQuote(await pending);
+		} finally {
+			pending = null;
+			setLoading(false);
+		}
+	};
+
+	const init = (): void => {
+		const roots = getRoots();
+		if (roots.length === 0) return;
+
+		for (const root of roots) {
+			const button = root.querySelector<HTMLButtonElement>(
+				"[data-hitokoto-refresh]",
+			);
+			if (!button || button.dataset.hitokotoBound === "true") continue;
+			button.dataset.hitokotoBound = "true";
+			button.addEventListener("click", () => {
+				void ensureQuote(true);
+			});
+		}
+
+		void ensureQuote(false);
+	};
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", init, { once: true });
+	} else {
+		init();
+	}
+</script>

@@ -356,3 +356,4 @@ blog/
 | v1.0 | 2026-11-13 | 首版：GitHub Pages + Giscus + M0–M4 |
 | v1.2 | 2026-11-13 | 决策落定并进入实施：域名 `www.liveroom.dpdns.org`、**评论暂停**（`type: "none"`，Waline 保留为后续方案）、仓库已 Public、保留 `.github/workflows/deploy.yml`；M1（本地部署）与 M2（`command` 脚本）已完成并实测；M3 已完成站点身份/关闭看板娘与音乐/内容骨架/首篇文章/`.pages.yml`/`public/_headers`/四份文档；修正字体 CDN 不可达问题 |
 | v1.3 | 2026-11-13 | 实际上线形态修正为 **Cloudflare Workers（静态资源）**（非 Pages）：Worker 名 `blog`，`wrangler.jsonc` 补 `previews: {}`，根域与 `www` 均绑定 Custom Domain；头像与 favicon 换成自定义素材，修复页脚版权重复 |
+| v1.4 | 2026-11-14 | 首页视觉与功能迭代：关闭全站壁纸背景（`mode: "none"`，纯色 + 首页 hero 卡）、新增「每日一言」（一言 API + 首页/侧边栏展示 + 本地缓存与兜底 + 换一句）、清理模板与第三方文案（公告、英文横幅、追番/游戏/MAL 配置、Giscus、友链/相册/打赏/书签示例） |

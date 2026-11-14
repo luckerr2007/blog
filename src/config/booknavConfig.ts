@@ -138,16 +138,15 @@ export const booknavConfig: BooknavGroup[] = [
 		weight: 70,
 		items: [
 			{
-				title: "Firefly Docs",
-				url: "https://docs-firefly.cuteleaf.cn",
-				desc: "Firefly 主题模板文档",
-				icon: "https://docs-firefly.cuteleaf.cn/logo.png",
+				title: "Astro 文档",
+				url: "https://docs.astro.build/zh-cn/",
+				desc: "本站所用框架的官方中文文档",
 				weight: 10,
 			},
 			{
-				title: "夏夜流萤",
-				url: "https://blog.cuteleaf.cn",
-				desc: "飞萤之火自无梦的长夜亮起",
+				title: "MDN Web Docs",
+				url: "https://developer.mozilla.org/zh-CN/",
+				desc: "前端 API 与 Web 标准的权威参考",
 				weight: 9,
 			},
 		],
