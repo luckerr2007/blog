@@ -202,3 +202,29 @@ html.is-animating.is-leaving .transition-leaving {
 		animation: none !important;
 	}
 }
+
+/* ── 滚动驱动入场（文章配图）：进入视口时轻微淡入 ─────────── */
+@keyframes media-in {
+	from {
+		opacity: 0.65;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@supports (animation-timeline: view()) {
+	@media (prefers-reduced-motion: no-preference) {
+		.prose img,
+		.prose figure {
+			animation: media-in linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 55%;
+		}
+	}
+}
+
+/* 移动端点按不出现灰色高亮块，交给按压态自己表达 */
+html {
+	-webkit-tap-highlight-color: transparent;
+}

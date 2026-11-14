@@ -91,11 +91,14 @@ function formatDate(timestamp: number): string {
 
 <div class="flex flex-col gap-1.5">
 	{#if loading}
-		<div class="flex justify-center p-3">
-			<svg class="size-5 animate-spin text-(--primary)" viewBox="0 0 24 24" fill="none">
-				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"/>
-				<path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-			</svg>
+		<div class="skeleton-list" aria-hidden="true">
+			{#each Array(2) as _, index (index)}
+				<div class="skeleton-item">
+					<div class="skeleton-line skeleton-line--meta"></div>
+					<div class="skeleton-line skeleton-line--body"></div>
+					<div class="skeleton-line skeleton-line--short"></div>
+				</div>
+			{/each}
 		</div>
 	{:else if error || entries.length === 0}
 		<p class="m-0 p-3 text-center text-sm text-neutral-500">
@@ -145,3 +148,60 @@ function formatDate(timestamp: number): string {
 		{/each}
 	{/if}
 </div>
+
+<style>
+	.skeleton-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 0.25rem 0;
+	}
+
+	.skeleton-item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+		padding: 0.5rem;
+	}
+
+	.skeleton-line {
+		height: 0.6rem;
+		border-radius: 4px;
+		background: linear-gradient(
+			90deg,
+			var(--c-inset) 0%,
+			color-mix(in srgb, var(--c-fg) 8%, var(--c-inset)) 50%,
+			var(--c-inset) 100%
+		);
+		background-size: 200% 100%;
+		animation: skeleton-shimmer 1.4s var(--ease-standard) infinite;
+	}
+
+	.skeleton-line--meta {
+		width: 38%;
+		height: 0.5rem;
+	}
+
+	.skeleton-line--body {
+		width: 92%;
+	}
+
+	.skeleton-line--short {
+		width: 64%;
+	}
+
+	@keyframes skeleton-shimmer {
+		from {
+			background-position: 180% 0;
+		}
+		to {
+			background-position: -80% 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.skeleton-line {
+			animation: none;
+		}
+	}
+</style>
