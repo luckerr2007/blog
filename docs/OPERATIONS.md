@@ -94,6 +94,20 @@ START_TIMEOUT=180 ./command start # 首次启动慢可加大超时
 > `previews: {}` 不能省：wrangler 4.147 的 `wrangler preview`（预览部署）会校验该字段，缺了会直接报
 > `Failed: error occurred while running deploy command`。
 
+### 自动部署（master = 生产，推荐）
+
+推送到 `master` 即由 GitHub Actions 构建并发布到生产，无需本地操作：
+
+| 项 | 值 |
+| --- | --- |
+| workflow | `.github/workflows/deploy-cloudflare.yml`（push `master` / 手动 dispatch） |
+| 流程 | `pnpm install` → `pnpm build` → `cloudflare/wrangler-action@v3` 执行 `deploy` |
+| 必需 secret | `CLOUDFLARE_API_TOKEN`（Workers Scripts:Edit + 账号读权限）、`CLOUDFLARE_ACCOUNT_ID` |
+| 兜底 | 未配置 secret 时只构建不发布，输出 warning，不会红叉 |
+| 结果核对 | Actions 日志里的 `Current Version ID` = Cloudflare 面板 Production 版本 |
+
+`Deploy to GitHub Pages`（`.github/workflows/deploy.yml`）已改为仅手动触发，站点不经过 Pages。
+
 ### 手动部署（本地）
 
 ```bash
