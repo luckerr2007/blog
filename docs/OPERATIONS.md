@@ -119,13 +119,21 @@ CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=xxx npx wrangler deploy
 
 ### 域名
 
-- 根域 `taosu.dpdns.org` 与 `www.taosu.dpdns.org` 均已绑定到 Worker `blog`（Custom Domain，HTTPS 自动签发）
+- 主域 `www.taosu.dpdns.org` 绑定到 Worker `blog`（Custom Domain，HTTPS 自动签发）
+- 裸域 `taosu.dpdns.org` 绑定到 Worker `taosu-redirect`，所有请求按原路径和查询串 301 到 `https://www.taosu.dpdns.org`
+- 旧域名 `liveroom.dpdns.org` / `www.liveroom.dpdns.org` 已从 Worker `blog` 解绑，不再提供服务
 - 新增域名：Workers & Pages → blog → Settings → Domains & Routes → Add → Custom domain 填域名即可
 - 规范域名（canonical / sitemap / RSS）为 `https://www.taosu.dpdns.org`，改域名时同步改 `siteConfig.site_url`
 
+裸域跳转 Worker 的源码在 `workers/redirect/`，修改后部署：
+
+```bash
+npx wrangler deploy --config workers/redirect/wrangler.jsonc
+```
+
 ### 响应头与重定向
 
-`public/_headers` 随 `dist` 一起上传，对 Workers 静态资源同样生效；如需重定向用 `public/_redirects`。`vercel.json` 不生效。
+`public/_headers` 随 `dist` 一起上传，对 Workers 静态资源同样生效；路径级重定向用 `public/_redirects`，裸域到 `www` 的跳转由 `workers/redirect/` 处理。`vercel.json` 不生效。
 
 ### 回滚
 

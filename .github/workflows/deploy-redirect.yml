@@ -1,0 +1,32 @@
+name: Deploy apex redirect (Cloudflare Workers)
+
+# 裸域 taosu.dpdns.org 的 301 Worker 独立部署；
+# 只有 workers/redirect/ 发生变化或手动触发时才运行。
+on:
+  push:
+    branches: [master]
+    paths:
+      - "workers/redirect/**"
+      - ".github/workflows/deploy-redirect.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-redirect
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Deploy redirect worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config workers/redirect/wrangler.jsonc
