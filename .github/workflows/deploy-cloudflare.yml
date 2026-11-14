@@ -38,8 +38,6 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
       # 未配置 secret 时只跑构建、跳过发布，避免 push 直接红叉。
       # 配置方式：gh secret set CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID
       - name: Deploy to Cloudflare Workers
