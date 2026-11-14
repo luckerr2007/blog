@@ -1,65 +1,44 @@
 ---
-title: 把 Firefly 改成自己的样子：二次开发、发文与部署
+title: 我是怎么改 Firefly 的，以及每次发文都做些什么
 published: 2026-11-14
-description: 从配置、覆盖样式到改上游组件，记录本站的二次开发分层、每日一言与动效的落地过程，以及发文、构建、Cloudflare Workers 部署和回滚里真正会踩的坑。
+description: 从灰阶配色、每日一言到动效和 Cloudflare 部署，记下这两天改主题的过程、动过的文件，以及下次升级模板时不想再踩的坑。
 tags: [Astro, Firefly, Cloudflare Workers, 建站]
 category: 博客指南
 comment: false
 ---
 
-第一篇文章写的是从零把站搭起来。真正每天打交道的其实是后面这些：改一行配置、加一个组件、把绿色主题换成灰阶、写完文章再推上去。
+昨天把站搭起来，今天基本都在改主题。
 
-我不是先画好架构图再动手的人。实际顺序是：先换文案，再改视觉，最后才把动效抽成 token。中间返工过几次，也踩过「本地好好的，构建后组件不 hydrate」这种坑。这篇把这些过程拆开写，重点放在**怎么改原版主题还不把升级路堵死**，以及发文和部署时哪些地方最容易翻车。
+Firefly 默认的样子不差，但绿色和圆角不太合我的口味，首页也想加点自己的东西。改着改着又发现部署和发文各有几个小坑，索性一起记下来。不是教程，更多是给自己看的备忘：哪些文件动了、为什么动、下次升级模板时别再踩一遍。
 
-搭建过程见[《这个博客是怎么搭建起来的》](/posts/guide/how-this-blog-was-built/)。
+搭建过程在[另一篇](/posts/guide/how-this-blog-was-built/)里。
 
-## 一、改造之前，先给自己留条后路
+## 先留退路
 
-Firefly 是会持续更新的模板。如果上来就把几十个上游文件改得面目全非，下一次升级只能整站重来。
-
-我给自己定的规矩很土：**能新增就不覆盖，能覆盖就不改上游，非改不可就把 diff 压到最小**。每改一处，顺手记进仓库的 `docs/CUSTOMIZATION.md`，写清楚改了哪个文件、为什么改、升级时要注意什么。这个文件后来成了升级时最有用的一张地图。
-
-动手前先留基线：
+原版还在更新，我打算长期用，所以一开始就定了个规矩：能不改上游文件就不改。
 
 ```bash
-git tag baseline-firefly-6.16.9   # 或者记下上游对应 commit
+git tag baseline-firefly-6.16.9
 git remote add upstream https://github.com/CuteLeaf/Firefly.git
 git fetch upstream master
 ```
 
-之后任何时候都能用 `git log --oneline upstream/master..master` 看自己到底偏离原版多少，用 `git diff --stat upstream/master` 看改动集中在哪些目录。偏离越小，升级越轻松。
+有了这个，随时能看自己偏离原版多少：
 
-还有一步是清理模板内容：把示例文章、动态、项目挪到 `src/content/_archive/`。它们不参与构建，但留在原目录会混进首页、归档和 Pagefind 索引，搜索时很出戏。
+```bash
+git log --oneline upstream/master..master
+git diff --stat upstream/master
+```
 
-## 二、改造分四层，按侵入性从低到高
+模板自带的示例文章、动态和项目，我挪到了 `src/content/_archive/`。它们不参与构建，但留在原目录会混进归档和搜索。
 
-### 1. 配置层：先榨干模板自带的开关
+每改一处，就往 `docs/CUSTOMIZATION.md` 里补一行。这个文件看着麻烦，真到升级的时候能省很多时间，尤其是那些「当时为什么这么改」已经想不起来的改动。
 
-Firefly 的配置覆盖得很全：站点信息、导航、侧栏、壁纸、字体、评论、音乐、看板娘，基本都在 `src/config/*Config.ts`，类型在 `src/types/`，统一从 `@/config` 导入。
+## 换配色
 
-本站这一层做的事情包括：
+模板原来的绿色我看了两天还是不适应，于是新建 `src/styles/theme-monochrome.css`，在 `Layout.astro` 里跟在 `variables.styl` 后面引入。
 
-- `siteConfig.ts`：标题、副标题、`site_url`、描述、关键词、`siteStartDate`，以及页面的开关；
-- `profileConfig.ts`：名字、简介、头像、GitHub 链接；
-- `navBarConfig.ts`：导航精简成「主页 / 文章 / 关于」，去掉模板里的社交空菜单；
-- `backgroundWallpaper.ts`：`mode: "none"`，关掉壁纸、播放器和水波纹；
-- `musicConfig.ts`：模板没有总开关，只能把 `showInNavbar` 和 `showInSidebar` 都设为 `false`，再把示例播放列表清空；
-- `fontConfig.ts`：把字体 provider 从 `fontsource` 改成 `google`。
-
-最后一条是被逼的。某天 `pnpm dev` 和 `pnpm build` 一起报 `CannotFetchFontFile`，原因是本机访问 `cdn.jsdelivr.net` 超时。Astro Fonts API 是构建期下载、自托管输出，换 provider 只影响构建机，访客不会因此依赖 Google。这种改动要写进清单，升级时很容易被上游改回去。
-
-配置改完跑 `pnpm type-check`。字段拼错、类型不匹配会直接报出来，比在浏览器里瞎找快得多。
-
-### 2. 覆盖样式层：能靠变量解决就别动组件
-
-视觉改造集中在两个新文件：
-
-- `src/styles/theme-monochrome.css`：灰阶令牌、圆角、边框、毛玻璃、mono 元信息，以及后来按 Apple HIG 调的语义色和命中区；
-- `src/styles/theme-motion.css`：时长、缓动、入场、换页、面板、骨架屏这些动效规则。
-
-它们都在 `Layout.astro` 里、`variables.styl` 之后引入。上游的变量文件一行没改，想回到彩色主题，把 `theme-monochrome.css` 的 import 删掉就行。
-
-覆盖层里有个细节：把 `--primary` 直接指向前景色，所有用 `bg-(--primary)` 的组件会自动变成黑白反色，不需要挨个改组件。
+思路很简单，只覆盖变量，不动组件：
 
 ```css
 :root {
@@ -71,81 +50,76 @@ Firefly 的配置覆盖得很全：站点信息、导航、侧栏、壁纸、字
 }
 ```
 
-暗色块里把 `--c-bg` 换成纯黑、`--c-card` 换成 `#1c1c1e`，再补一套 label / separator 的透明度。但暗色下有些地方写死了 `color: white`，比如分类胶囊，得单独改成 `var(--c-bg)`，否则黑底黑字。
+把 `--primary` 指向前景色之后，所有用 `bg-(--primary)` 的组件自己就变成黑白了，不用一个个找。暗色下 `--c-bg` 换成纯黑，`--c-card` 用 `#1c1c1e`。
 
-后来加 Apple HIG 那版时，又补了按钮命中区、`prefers-contrast`、`prefers-reduced-transparency`。这些都塞在覆盖层里，没有碰上游组件的结构。
+这里遇到一个小问题：分类胶囊的暗色样式写死了 `color: white`，黑白主题下变成黑底黑字。暗色下要单独把它改成 `var(--c-bg)`。类似写死颜色的地方还有几处，改完最好在暗色模式里走一遍。
 
-动效层还有两个和 Tailwind 4 有关的细节。`-translate-y-1` 这类工具类落在独立的 `translate` 属性上，过渡写 `transform` 不会生效，必须写 `translate`；另外所有动画只改 `transform` / `opacity`，并在 `prefers-reduced-motion` 下关掉，骨架屏也要能静止，不然「减少动态效果」就形同虚设。
+后来又照着 Apple HIG 调了圆角、顶栏材质和按钮命中区。还是只动这个文件，想回彩色主题，把 import 删掉就回去了。
 
-### 3. 新增组件层：只在上游留一个挂载点
+## 关掉用不上的东西
 
-首页 hero、顶部阅读进度条、每日一言，都是新增文件：
+壁纸、音乐、看板娘、友链、相册、项目页，这些我暂时都用不上。
 
-| 文件 | 作用 |
-| --- | --- |
-| `src/components/layout/HomeHero.astro` | 首页欢迎区：状态点、mono 问候语、大字标题、打字机副标题 |
-| `src/components/layout/ScrollProgress.astro` | 顶部 2px 阅读进度条，rAF 节流 |
-| `src/types/hitokotoConfig.ts` | 每日一言的配置类型 |
-| `src/config/hitokotoConfig.ts` | 接口列表、超时、轮换区间、兜底句子 |
-| `src/utils/hitokoto-client.ts` | 浏览器端取数、localStorage 缓存、接口失败回退 |
-| `src/components/common/HitokotoQuote.astro` | 展示组件，`hero` / `widget` 两种变体 |
-| `src/components/widget/Hitokoto.astro` | 侧边栏小组件 |
+`backgroundWallpaper.ts` 里把 `mode` 设成 `"none"`，播放器和水波纹一起关。音乐麻烦一点，模板没有总开关，只能把 `showInNavbar` 和 `showInSidebar` 都设成 `false`，再清空示例播放列表。评论区目前关着，`commentConfig.ts` 保持 `type: "none"`。
 
-接入上游的地方只有三处：`Layout.astro` 挂 `<ScrollProgress />`，`src/pages/[...page].astro` 只在第 1 页渲染 `<HomeHero />`，侧栏则要在 `src/types/sidebarConfig.ts` 的 `WidgetComponentType` 和 `src/components/layout/SideBar.astro` 的 `componentMap` 里登记新类型。
+字体改过 provider。某天 `pnpm dev` 直接报 `CannotFetchFontFile`，查下来是本机访问 `cdn.jsdelivr.net` 超时。Firefly 用的 Astro Fonts API 会在构建时下载字体再自托管，把 provider 从 `fontsource` 换成 `google` 就好了。这个改动影响的是构建机，访客那边还是本地字体。
 
-每日一言踩过两个坑：
+身份相关的几处也顺手换了：头像和昵称在 `profileConfig.ts`，favicon 在 `public/favicon/` 和 `siteConfig.favicon`，页脚版权是 `FooterConfig.html`。这些都走配置，不用碰组件。
 
-1. 一言接口前面有 CDN 缓存，不加时间戳参数会一直返回同一句。请求 URL 上带 `?t=...` 才真的换。
-2. 首页和侧栏可能同时存在，不能各请求各的。现在共享同一个 pending promise，SSR 先输出按日期轮换的兜底句子，接口挂了页面也不会空。
+## 每日一言
 
-缓存策略是每条句子写入时随机取 1–6 小时 TTL。页面一直开着就到点换，切回前台发现过期也立刻换；Swup 切页后先读缓存补同一句，避免刚换完又跳一下。
+首页太空，加了个每日一言。组件和逻辑都是新文件：
 
-### 4. 改上游组件层：把每一处修改都当成债
+- `src/types/hitokotoConfig.ts`、`src/config/hitokotoConfig.ts`：接口、超时、轮换区间、兜底句子；
+- `src/utils/hitokoto-client.ts`：取数、缓存、接口失败回退；
+- `src/components/common/HitokotoQuote.astro`、`src/components/widget/Hitokoto.astro`：首页和侧栏两个入口。
 
-有些事确实只能在原组件上改。本站动过的上游文件大致是这些：
+接入侧栏要改两个地方：`src/types/sidebarConfig.ts` 的 `WidgetComponentType`，以及 `src/components/layout/SideBar.astro` 里的 `componentMap`。首页则是在 `src/pages/[...page].astro` 里判断页码，只让第一页渲染 `<HomeHero />`。
 
-- `src/layouts/Layout.astro`：引入两个覆盖样式、挂进度条；
-- `src/components/layout/HomeHero.astro`：整体重写成 editorial 风格；
-- `src/components/controls/LightDarkSwitch.svelte`：接 View Transition 圆形揭示；
-- `src/components/widget/DynamicSidebar.svelte`、`Dynamic.astro`：骨架屏与 `client:idle`；
-- `src/components/pages/dynamic/DynamicFeed.svelte`：动态流骨架屏；
-- `src/components/common/GridSkeleton.svelte`：媒体网格骨架换成统一 shimmer；
-- `src/components/pages/AdvancedSearch.svelte`、`controls/Search.svelte`：搜索加载态与面板过渡；
-- `src/components/layout/PostPage.astro`、`NavMenuPanel.astro`：零散的过渡与布局修正。
+逻辑上有两件事要处理。
 
-改的时候尽量守住两条：只改必要行，不整文件格式化；在关键位置留一行注释说明为什么和上游不一样。否则下次 `git merge upstream/master` 会给你一堆无意义的冲突。
+一言接口前面有 CDN 缓存，不传时间戳会一直返回同一句。请求 URL 加上 `?t=...` 才真的换。
 
-这一层也踩过最诡异的一个 bug：动态侧栏用 `client:visible`，宿主元素高度是 0，IntersectionObserver 永远不触发，组件一直停在加载态。改成 `client:idle` 才正常：
+首页和侧栏可能同时存在，所以共用同一个 pending promise。SSR 先输出按日期选的兜底句子，接口挂了也不至于空着。
+
+缓存是每条句子随机 1–6 小时。页面一直开着就等定时器，切回前台发现过期就立刻换。Swup 切页后先读缓存补同一句，不然刚换完切个页面又跳一下。
+
+## 动效
+
+动效这块单独写了 `theme-motion.css`，把时长和缓动收敛成几个 token。翻了下提交记录，前后改了三次：先抽 token，再补骨架屏，最后修侧栏的 `client:idle`。
+
+```css
+:root {
+	--dur-2: 150ms;
+	--dur-3: 180ms;
+	--ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+```
+
+主题切换用 View Transition 做了个从按钮扩散的圆形揭示。不支持这个 API 的浏览器，或者用户开了 `prefers-reduced-motion`，就直接切换，不做降级动画。
+
+两个和 Tailwind 4 有关的细节。`-translate-y-1` 这类类名落在独立的 `translate` 属性上，过渡写 `transform` 不会生效，要写 `translate`。另外动画尽量只碰 `transform` 和 `opacity`，骨架屏在减弱动效时也要能停下来。
+
+改到动态侧栏时遇到一个很怪的 bug：组件一直停在加载态。查了半天，不是接口问题，是 `client:visible` 的宿主元素高度为 0，IntersectionObserver 永远不触发。
 
 ```diff
 -<DynamicSidebar client:visible apiUrl={apiUrl} limit={limit} {memos} />
 +<DynamicSidebar client:idle apiUrl={apiUrl} limit={limit} {memos} />
 ```
 
-后来干脆把转圈换成骨架，加载中至少不会看起来像卡死。这类「组件不报错但永远不初始化」的问题，先查宿主尺寸和 `client:*` 指令，比在组件内部打日志快。
+改完才正常。顺手把转圈换成了两条骨架，加载中看起来不至于像死掉。
 
-### 5. 常见需求对照
+## 哪些上游文件被改了
 
-改的时候先在这张表里找，能省掉翻组件的时间：
+完全不动上游不现实。这些文件我改过：
 
-| 想改 | 去哪里 |
-| --- | --- |
-| 站点标题、描述、域名、时区 | `src/config/siteConfig.ts` |
-| 导航项、子菜单 | `src/config/navBarConfig.ts`，注意 `pageKey` 与页面开关联动 |
-| 头像、昵称、简介、社交链接 | `src/config/profileConfig.ts` |
-| 页脚版权与备案 | `src/config/FooterConfig.html` |
-| favicon | `public/favicon/` + `siteConfig.favicon` |
-| 主题色相 | `siteConfig.themeColor.hue`；要彻底灰阶就改覆盖层 |
-| 字体 | `src/config/fontConfig.ts`，离线环境注意 provider |
-| 文章列表布局 | `siteConfig.postListLayout`（列表/网格、封面位置、摘要行数） |
-| 侧栏放什么 | `src/config/sidebarConfig.ts`，新增组件还要登记类型和 `componentMap` |
-| 页面开关 | `siteConfig.pages`，关掉后导航项也会隐藏 |
-| 评论 | `src/config/commentConfig.ts` |
-| 壁纸与首页文字 | `src/config/backgroundWallpaper.ts` |
+`Layout.astro`（引入两个样式、挂进度条）、`HomeHero.astro`（重写）、`LightDarkSwitch.svelte`（主题揭示）、`DynamicSidebar.svelte` 和 `Dynamic.astro`（骨架和 `client:idle`）、`DynamicFeed.svelte`（动态流骨架）、`GridSkeleton.svelte`（媒体网格骨架）、`AdvancedSearch.svelte` 和 `Search.svelte`（搜索加载态、面板过渡），还有 `PostPage.astro`、`NavMenuPanel.astro` 里一些零碎过渡。
 
-## 三、升级上游：把冲突当成一次 code review
+改的时候尽量只动必要的行，不整文件格式化，关键位置留一行注释。否则下次合并上游，冲突会多到不想看。
 
-升级流程不复杂，麻烦的是冲突里的取舍：
+## 升级模板
+
+流程大概是这样：
 
 ```bash
 git fetch upstream
@@ -153,18 +127,11 @@ git checkout -b upgrade/firefly-<version>
 git merge upstream/master --no-commit
 ```
 
-冲突基本集中在三个地方：`src/config/*`、`src/content/*`、`package.json`。我的处理顺序是：
+冲突基本在 `src/config/*`、`src/content/*` 和 `package.json`。配置冲突先看上游是不是加了新字段，新字段留下，自己改过的值继续用；内容冲突直接保留本地；`package.json` 只接受依赖版本，脚本和 `packageManager` 以本地为准。
 
-1. 配置冲突先看上游是不是新增了字段。新增的保留，自己改过的值继续用；
-2. 内容冲突直接保留本地，模板示例内容早就归档到 `src/content/_archive/`；
-3. `package.json` 只接受依赖版本，脚本和 `packageManager` 以本地为准；
-4. 样式和组件冲突逐个看 diff，确认覆盖层还在、类名没被上游改掉。
+合并完要专门检查几项：字体 provider 有没有被改回 `fontsource`、`siteConfig.pages` 的开关有没有被重置、`.pages.yml` 的字段和新版 schema 对不对得上。然后 `pnpm install && pnpm check && pnpm build`，最后把这次升级记进 `CUSTOMIZATION.md`。
 
-合并完必须复查几件事：字体 provider 有没有被改回 `fontsource`、`siteConfig.pages` 的开关有没有被重置、`.pages.yml` 的字段和新版 zod schema 对不对得上。然后 `pnpm install && pnpm check && pnpm build`，最后把这次升级的处理记进 `docs/CUSTOMIZATION.md`。
-
-升级本身不可怕，可怕的是改完没记录，三个月后自己都不知道为什么这里和上游不一样。
-
-## 四、发文：文件路径就是 URL
+## 发文
 
 新建文章：
 
@@ -172,166 +139,79 @@ git merge upstream/master --no-commit
 pnpm new-post guide/modify-and-deploy-the-blog
 ```
 
-参数既是目录也是文件名，**用 ASCII**。脚本会把中文标题转成拼音写进 frontmatter 的 `slug`，但当前内容 schema 不读取这个字段，路由实际取的是文件路径（`entry.id`）。传中文路径，URL 就会是中文，分享和 RSS 都别扭。
+参数既是目录也是文件名，用 ASCII。脚本会把中文转成拼音写进 frontmatter 的 `slug`，但内容 schema 里没有这个字段，路由实际取的是文件路径。传中文路径，URL 就是中文。
 
-生成后至少改这几项：
+frontmatter 里常写错的是日期。`published` 和 `updated` 按 `YYYY-MM-DD` 写，带时分秒容易出问题。`draft: true` 只在生产构建里隐藏，本地 dev 仍然能看到。`prevTitle` 这类字段是主题内部用的，不用手写。
 
-```yaml
----
-title: 把 Firefly 改成自己的样子：二次开发、发文与部署
-published: 2026-11-14
-description: 60–120 字摘要，列表和 SEO 都会用
-tags: [Astro, Firefly, Cloudflare Workers]
-category: 博客指南
-draft: false
----
-```
+分类和目录是两回事：目录决定 URL，`category` 决定分类页聚合。两者可以不一样，我这篇的目录是 `guide`，分类写的是「博客指南」。
 
-几个容易写错的字段：
+图片放在 `src/content/posts/images/<slug>/`，正文里用相对路径。格式优先 WebP，单张别超过 300KB。
 
-- `published` / `updated` 写 `YYYY-MM-DD`，不要带时分秒；
-- `draft: true` 只在生产构建里隐藏，`pnpm dev` 仍然能看到，别把「本地有」当成「线上有」；
-- `prevTitle` / `prevSlug` / `nextTitle` / `nextSlug` 是主题内部字段，不要手写；
-- `category` 决定分类页聚合，目录只决定 URL，两者可以不同，但混用会让归档看起来别扭；
-- 改文件名等于改 URL，旧链接、RSS、外部引用都会断。必须改时去 `public/_redirects` 补 301。
+不想开本地环境的时候我用 Pages CMS。它把仓库当数据库，网页上保存后直接 commit 到 master，后面走同一条部署流程。文件名得手填 ASCII slug，后台的 slugify 会把中文删掉。改过 `.pages.yml` 之后，最好拿一篇文章改个标点做一次冒烟测试，看看 `tags`、`category`、`series` 还在不在。
 
-图片放在 `src/content/posts/images/<slug>/`，正文用相对路径：
+## 本地验证
 
-```markdown
-![](./images/modify-and-deploy-the-blog/step-1.webp)
-```
-
-优先 WebP/AVIF，单张压到 300KB 以内。构建期会给本地图片生成 LQIP 占位，但原图太大，压缩不会自动救回来。
-
-不想开本地环境时，也可以用 Pages CMS 写。它把 GitHub 仓库当数据库，`.pages.yml` 声明内容模型，网页端保存后直接 commit 到 master，后面的构建和部署与本地 push 完全一样。有两个限制：文件名必须手填 ASCII slug，后台的 slugify 会把中文整段删掉；`.pages.yml` 的字段要和 `src/content.config.ts` 的 schema 对得上，否则保存成功、构建失败。
-
-改过内容模型之后，先拿一篇文章改个标点做冒烟测试，确认 frontmatter 里的 `tags`、`category`、`series`、`updated` 都没被吞。CMS 和本地同时改同一篇也容易冲突，动笔前先 `git pull`。
-
-## 五、本地能跑，和线上能跑，是两件事
-
-我习惯分三层验证，各查各的：
-
-| 命令 | 能发现什么 | 发现不了什么 |
-| --- | --- | --- |
-| `pnpm dev` | 交互、布局、控制台报错 | 构建期生成物、Pagefind、压缩后的行为 |
-| `pnpm check` + `pnpm type-check` | Astro/Svelte 模板诊断、TS 类型 | CSS、运行时逻辑、内容渲染结果 |
-| `pnpm build` | frontmatter schema、MDX、CSS 导入、生成资产 | 线上缓存、域名与 DNS |
-
-只跑 dev 最容易漏的是 **frontmatter 不合法**和**构建期资源缺失**。文章在 dev 里能打开，不代表 `astro build` 能过。
-
-`./command` 是改造初期写的，原因是每天都要起服务、找进程、看日志，太烦。它做的不只是包一层 `pnpm dev`：健康检查会轮询首页直到返回 200（首次启动要下载字体，实测接近一分钟），pid 和日志写进 `.run/`，`start` 用 `mkdir` 做原子锁防止双击起两个进程。
-
-这里也踩过一个自己挖的坑：最早 `restart` 直接写成 `stop; start`，stop 拿到锁还没释放，start 立刻报「另一个 command 进程正在运行」。后来在两步之间显式释放锁才修好。脚本看起来简单，状态管理一样会咬人。
-
-dev 还有几个天然盲区：
-
-- 搜索是假的。Pagefind 只在构建时生成索引，`Search.svelte` 在开发环境用的是写死的 mock，搜不到东西很正常；
-- 新增本地图片不会立刻有 LQIP，要重新构建才会写进 `src/constants/lqips.json`；
-- 改过依赖之后，Vite 的模块图可能坏掉。我就遇到过动态页一直停在骨架、控制台报 `Failed to fetch dynamically imported module`，重启 dev server 才恢复。这种时候别怀疑组件，先 `./command restart`；
-- 手动 `pnpm dev` 在部分环境只绑 IPv6 回环，`127.0.0.1` 打不开。`./command start` 会显式传 `--host 127.0.0.1`，省得排查半天。
-
-## 六、构建链里那些看不见的步骤
-
-本站的 `pnpm build` 不是单纯的 `astro build`：
-
-```text
-GitHub 卡片数据 → LQIP → VNDB 封面 → astro build
-→ 清理 PIO 资源 → 字体子集化 → 内联脚本压缩 → Pagefind 索引
-```
-
-本地完整跑一次大约 100 秒。几个副作用要心里有数：
-
-- `src/constants/lqips.json`、`src/constants/github-card-data.json` 是受版本控制的生成文件，构建可能改动它们。提交前看 diff，不要无脑 `git add -A`；
-- 构建期的字体子集化会打不少日志，属于正常输出，不要看到 warning 就以为构建坏了；
-- Pagefind 的日志会告诉你索引了多少页、多少词。这次加文章后从 2 页涨到 3 页、1290 词，能直观看出构建有没有把新文章吃进去；
-- `dist/`、`.run/`、`.astro/` 都已忽略，不要提交。
-
-## 七、部署：push master 之后发生了什么
-
-当前链路是 GitHub Actions 构建后交给 Wrangler：
-
-```text
-push master → pnpm install → pnpm build → wrangler deploy
-```
-
-workflow 在 `.github/workflows/deploy-cloudflare.yml`，需要两个仓库 secret：
-
-| Secret | 用途 |
-| --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Workers Scripts:Edit + 账号读权限 |
-| `CLOUDFLARE_ACCOUNT_ID` | 指定账号 |
-
-没配 token 时它只构建、不发布，日志里留一条 warning，任务还是绿的。我第一次就差点被这个「绿勾」骗过去。**Actions 成功不等于已经上线**，要确认 `Deploy to Cloudflare Workers` 那一步真的跑了。
-
-部署完核对三处：Actions 日志里的 `Current Version ID`、Cloudflare 面板 `Workers & Pages → blog → Deployments` 的 Production 版本、线上 HTML 里静态资源的 hash。
-
-手动发布：
+我现在基本只跑三条：
 
 ```bash
-./command build
-CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=xxx npx wrangler deploy
+pnpm dev
+pnpm check && pnpm type-check
+pnpm build
 ```
 
-`wrangler.jsonc` 有三个容易出事的点：
+dev 能看交互和布局，但有些东西它不管：搜索是写死的 mock，Pagefind 只在构建时生成；新加的本地图片没有 LQIP，得重新构建才会写进 `src/constants/lqips.json`；CSS 的问题也不一定能在 dev 里暴露。
 
-```jsonc
-{
-	"name": "blog", // 必须和面板里的 Worker 同名
-	"assets": { "directory": "./dist" },
-	"previews": {} // 不能省，wrangler preview 会校验
-}
+`pnpm build` 才是真的构建。本站这条命令不只有 `astro build`，前面要生成 GitHub 卡片、LQIP、VNDB 封面，后面还要做字体子集、压缩内联脚本、跑 Pagefind。本地一次大概 100 秒。
+
+构建会改 `src/constants/lqips.json` 和 `src/constants/github-card-data.json`，这两个文件是提交进仓库的。每次 `git add` 前看一眼 diff，别把无关的缓存变化带上。
+
+另外写了个 `./command` 脚本，省得每天找进程。它会等首页返回 200 再算启动成功，pid 和日志放 `.run/`，用 `mkdir` 做锁。最早 `restart` 写成 `stop; start`，stop 的锁还没释放，start 立刻报错，后来在中间手动释放才修好。
+
+还有两次比较烦的：改完依赖之后 Vite 的模块图坏了，动态页一直停在骨架，控制台报 `Failed to fetch dynamically imported module`，重启 dev server 才恢复；以及手动 `pnpm dev` 只绑了 IPv6 回环，`127.0.0.1` 打不开，`./command start` 显式传 `--host 127.0.0.1` 就没这个问题。
+
+## 部署
+
+推 master 就会触发 GitHub Actions：
+
+```text
+pnpm install → pnpm build → wrangler deploy
 ```
 
-也不要给构建环境设 `CF_WORKERS`。那会让 Astro 挂上 Cloudflare 适配器，而本站只是静态资源，用不上。
+workflow 在 `.github/workflows/deploy-cloudflare.yml`，需要 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID` 两个 secret。没配 token 时它只构建不发布，任务还是绿的。看日志的时候别只看最后那个勾，确认 `Deploy to Cloudflare Workers` 真的执行了。
 
-域名在 `Workers & Pages → blog → Settings → Domains & Routes` 绑定。`www` 和根域都指到同一个 Worker 时，确认 canonical 用的是 `www`，不然搜索引擎会看到两份内容。改域名时 `siteConfig.site_url`、Cloudflare 自定义域、外部收录要一起改。
+`wrangler.jsonc` 里三个地方容易出错：`name` 必须和面板里的 Worker 一致，`assets.directory` 指向 `./dist`，`previews: {}` 不能删（wrangler preview 会校验）。构建环境也不要设 `CF_WORKERS`，那会让 Astro 挂上 Cloudflare 适配器，静态站用不上。
 
-如果 Cloudflare 面板也连了 Git 自动构建，确认只留一条发布链路。同一次 push 构建两遍，很容易出现「面板里是新版本，域名还是旧版本」的灵异现象。
+部署完我会看三样：Actions 日志里的 Version ID、Cloudflare 面板的 Production 版本、线上 HTML 里静态资源的 hash。域名在 `Workers & Pages → blog → Settings → Domains & Routes` 绑定，`www` 和根域都指过来的时候，canonical 要统一，不然搜索引擎会看到两份。
 
-还有一种失败跟代码无关：我遇到过 GitHub API 能正常访问、`git push` 却卡在 `HTTP2 framing layer` 的情况。判断方法很简单，`curl https://api.github.com` 正常、`git ls-remote origin` 却一直不动，就不是仓库或权限问题，而是到 git 端点的网络路径有问题。临时换成 SSH remote，或者用仓库的 deploy key 推一次，通常能绕过去；推完记得把临时 key 删掉。
+本地也能手动发，先 `./command build`，再带 token 跑 `npx wrangler deploy`。我一般只在 Actions 出问题时才用。
 
-## 八、回滚：面板止血，代码治病
+还有一点，如果 Cloudflare 面板自己也连了 Git 构建，确认只留一条发布链路。一次 push 构建两遍，很容易出现面板里是新版本、域名还是旧版本的情况。
 
-两种回滚方式，作用不一样：
+缓存方面，`public/_headers` 给 `/_astro/*` 和 `/fonts/*` 设了一年 immutable，`/pagefind/*` 是一天。页面没更新先强刷，还不行再去面板 Purge Cache。
 
-| 方式 | 操作 | 特点 |
-| --- | --- | --- |
-| 面板回滚 | Deployments → 上一个成功版本 → Rollback | 秒级恢复，但仓库代码还是坏的 |
-| 代码回滚 | `git revert <bad-commit>` + push | 慢一点，但下一次发布不会再带病上线 |
+今天推送还遇到一次和代码无关的故障：GitHub API 能访问，`git push` 却卡在 `HTTP2 framing layer`。`git ls-remote origin` 也卡住，基本能确定是到 git 端点的网络问题。临时换 SSH、用 deploy key 推了一次，推完把 key 删了。
 
-只做面板回滚，下一次任何 push 都会把坏代码重新发上去。正确做法是先用面板止血，再 revert 代码。不要在 master 上 `git reset --hard` 后强推，历史会丢，CI 也失去对照。
+## 回滚
 
-## 九、周边开关和还没做的事
+面板的 Rollback 最快，Deployments 里选上一个成功版本就行。但代码还是坏的，下次 push 会把问题再带上去。所以面板回滚只能算止血，之后还是要 `git revert` 再推一次。别在 master 上 `git reset --hard` 强推，历史丢了更麻烦。
 
-本站当前关掉的东西比打开的多：评论 `type: "none"`、留言板、友链、相册、项目、书签、赞助页全部关闭，只留了动态。看板娘和音乐也是关的，但配置保留，想开的时候有地方改。
+## 剩下的坑
 
-搜索索引、RSS、Atom、sitemap、OG 图这些是模板自带的，跟着构建走，不需要单独维护。`public/_headers` 管安全头和缓存：`/_astro/*`、`/fonts/*` 是一年 immutable，`/pagefind/*` 是一天。以后要加统计或评论，优先看 `src/config/analyticsConfig.ts`、`commentConfig.ts`，别直接把脚本塞进 `Layout.astro`。
+- 用 npm 或 yarn 装依赖会被 `preinstall` 拦掉，这是故意的。
+- Node 低于 22.23 时，报错不一定指向版本，先 `node -v`。
+- 改完依赖不重启 dev server，可能会出现各种「组件不初始化」，先 `./command restart`。
+- 草稿本地能看见、线上没有，是正常的。
+- dev 搜索没结果是正常的，Pagefind 还没生成。
+- 日期按 `YYYY-MM-DD` 写，带时分秒容易在 schema 校验时出问题。
+- 中文文件名会让 URL 变中文。我写这篇时才注意到，`pnpm new-post` 里生成的拼音 `slug` 没被 schema 读取，路由用的是文件路径。
+- 改文件名不补 `_redirects`，旧链接就 404。
+- 缺 `CLOUDFLARE_API_TOKEN` 时 Actions 仍然绿，只是没发布。
+- Worker 名字不一致，部署成功但发到了另一个 Worker。
+- 只回滚面板不改代码，下次 push 复发。
+- `dist/`、`.run/`、`.astro/` 都不该进仓库。
 
-备份目前靠两样：GitHub 仓库和 Cloudflare 的版本记录。数据库类的东西没有，静态站的好处在这里体现得很明显。
+## 还没做的
 
-## 十、最容易翻车的几个瞬间
+评论和统计都还没开，`analyticsConfig.ts` 和 `commentConfig.ts` 留着位置。RSS、Atom、sitemap、OG 图是模板自带的，跟着构建走。备份靠 GitHub 和 Cloudflare 的版本记录，静态站暂时没有数据库要管。
 
-1. 用 npm/yarn 安装。`preinstall` 会直接拦，lockfile 也不该出现第二份。
-2. Node 低于 22.23。报错可能五花八门，先 `node -v`。
-3. 改完依赖不重启 dev server。Vite 模块图坏了以后，页面会停在骨架或直接白屏，`./command restart` 比看代码快。
-4. 草稿本地可见、线上没有。`draft: true` 只在生产过滤，这是预期行为。
-5. dev 搜索没结果。Pagefind 只在 build 生成。
-6. frontmatter 日期带了时分秒，构建直接红。
-7. 中文文件名。URL 会跟着变中文，脚本里的拼音 `slug` 不参与路由。
-8. 改文件名不做重定向。旧链接 404，RSS 里出现重复条目。
-9. Actions 绿了但线上没变。先看是不是缺 `CLOUDFLARE_API_TOKEN`，发布步骤被跳过了。
-10. Worker 名字不一致。部署成功，但发到了另一个 Worker。
-11. 把 `dist/` 或密钥提交进仓库。token 一旦进 git 历史，删文件也没用，只能轮换。
-12. 只回滚面板不改代码。下一次 push 原地复发。
-
-## 十一、发布前检查
-
-- [ ] `./command start`，本地看页面和交互
-- [ ] `pnpm check` 与 `pnpm type-check`
-- [ ] `./command build` 通过，检查生成文件 diff
-- [ ] `./command preview` 复查生产产物：搜索、图片、移动端
-- [ ] `git status` 只包含本次改动，没有 `dist/`、`.run/`、密钥
-- [ ] push master，确认 `Deploy to Cloudflare Workers` 成功
-- [ ] 线上强刷复查，必要时 Purge Cache
-
-改造和发布都变成固定动作之后，剩下的时间才是写内容。
+这些等真正需要了再说。现在至少发文和发布这条线是通的，剩下的时间可以拿来写东西。
