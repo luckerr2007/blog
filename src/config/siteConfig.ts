@@ -55,7 +55,16 @@ export const siteConfig: SiteConfig = {
 		"桃苏的个人博客，2022 年初二时开始记录，如今已是大一。写技术、生活，也写一个普通人和 AI 一起长大的几年。",
 
 	// 站点关键词
-	keywords: ["桃苏", "博客", "AI", "成长", "Astro", "Firefly", "静态博客", "技术笔记"],
+	keywords: [
+		"桃苏",
+		"博客",
+		"AI",
+		"成长",
+		"Astro",
+		"Firefly",
+		"静态博客",
+		"技术笔记",
+	],
 
 	// 主题色
 	themeColor: {
