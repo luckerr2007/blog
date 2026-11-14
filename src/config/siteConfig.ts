@@ -52,10 +52,10 @@ export const siteConfig: SiteConfig = {
 
 	// 站点描述
 	description:
-		"桃苏的个人博客，始于 2022 年 8 月，记录技术、生活与思考。基于 Astro 与 Firefly 主题构建，关注前端、工具链与日常折腾。",
+		"桃苏的个人博客，2022 年初二时开始记录，如今已是大一。写技术、生活，也写一个普通人和 AI 一起长大的几年。",
 
 	// 站点关键词
-	keywords: ["桃苏", "博客", "Astro", "Firefly", "静态博客", "技术笔记"],
+	keywords: ["桃苏", "博客", "AI", "成长", "Astro", "Firefly", "静态博客", "技术笔记"],
 
 	// 主题色
 	themeColor: {

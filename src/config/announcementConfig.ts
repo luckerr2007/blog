@@ -6,7 +6,7 @@ export const announcementConfig: AnnouncementConfig = {
 
 	// 公告内容
 	content:
-		"从 2022 年 8 月开始记录技术笔记、工具链折腾，偶尔也写点生活。更新不定期，欢迎通过 RSS 订阅。",
+		"2022 年初二开站，现在大一。这里记录技术、生活，以及一个普通人和 AI 一起长大的几年。",
 
 	// 是否允许用户关闭公告
 	closable: true,
