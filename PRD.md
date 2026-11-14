@@ -10,8 +10,8 @@
 | 部署平台 | **Cloudflare Pages**（静态站点，根路径部署） |
 | 评论系统 | **本期暂停**（`type: "none"`）；后续可选 Waline |
 | 内容后台 | **Pages CMS**（`app.pagescms.org` + 仓库内 `.pages.yml`） |
-| 线上域名 | **https://www.liveroom.dpdns.org** |
-| 当前进度 | M1 ✅ / M2 ✅ / M3 ✅ / M4 ✅ **已上线 Cloudflare Workers**（`www.liveroom.dpdns.org`） |
+| 线上域名 | **https://www.taosu.dpdns.org** |
+| 当前进度 | M1 ✅ / M2 ✅ / M3 ✅ / M4 ✅ **已上线 Cloudflare Workers**（`www.taosu.dpdns.org`） |
 | 本地工作目录 | `/Users/luckerr/Documents/项目/dev/blog` |
 
 ---
@@ -82,7 +82,7 @@
 
 | ID | 决策点 | 确认结果 | 落地位置 |
 | --- | --- | --- | --- |
-| D1 | 部署平台 | **Cloudflare Pages**，静态输出，`base: "/"` 不变，域名 `https://www.liveroom.dpdns.org` | Cloudflare 控制台 Git 集成 + `siteConfig.site_url` |
+| D1 | 部署平台 | **Cloudflare Pages**，静态输出，`base: "/"` 不变，域名 `https://www.taosu.dpdns.org` | Cloudflare 控制台 Git 集成 + `siteConfig.site_url` |
 | D2 | 主分支 / 仓库 | `luckerr2007/blog`，`master` | Git / Cloudflare 构建分支 |
 | D3 | 评论系统 | **本期暂停**：`commentConfig.type = "none"`，留言板页面关闭；Waline 作为后续启用方案 | `src/config/commentConfig.ts`、`siteConfig.ts#pages.guestbook` |
 | D4 | 统计 | 暂不启用（预留 `analyticsConfig.ts`） | 二开阶段按需 |
@@ -97,7 +97,7 @@
 
 | 编号 | 事项 | 确认结果 | 对实现的影响 |
 | --- | --- | --- | --- |
-| Q1 | 最终域名 | **`www.liveroom.dpdns.org`** | 已写入 `siteConfig.site_url`；sitemap / RSS / OG / canonical 全部据此生成 |
+| Q1 | 最终域名 | **`www.taosu.dpdns.org`** | 已写入 `siteConfig.site_url`；sitemap / RSS / OG / canonical 全部据此生成 |
 | Q2 | Waline 后端 | **本期不做**（评论暂停） | 前端维持 `type: "none"`，不引入后端依赖 |
 | Q3 | 仓库可见性 | **Public** | Pages CMS 的 GitHub App 可正常授权 |
 | Q4 | GitHub Actions | **保留 `deploy.yml`** | 不作为部署主链路（主链路是 Cloudflare Pages Git 集成），保留作构建体检 |
@@ -354,6 +354,6 @@ blog/
 | 版本 | 日期 | 变更 |
 | --- | --- | --- |
 | v1.0 | 2026-11-13 | 首版：GitHub Pages + Giscus + M0–M4 |
-| v1.2 | 2026-11-13 | 决策落定并进入实施：域名 `www.liveroom.dpdns.org`、**评论暂停**（`type: "none"`，Waline 保留为后续方案）、仓库已 Public、保留 `.github/workflows/deploy.yml`；M1（本地部署）与 M2（`command` 脚本）已完成并实测；M3 已完成站点身份/关闭看板娘与音乐/内容骨架/首篇文章/`.pages.yml`/`public/_headers`/四份文档；修正字体 CDN 不可达问题 |
+| v1.2 | 2026-11-13 | 决策落定并进入实施：域名 `www.taosu.dpdns.org`、**评论暂停**（`type: "none"`，Waline 保留为后续方案）、仓库已 Public、保留 `.github/workflows/deploy.yml`；M1（本地部署）与 M2（`command` 脚本）已完成并实测；M3 已完成站点身份/关闭看板娘与音乐/内容骨架/首篇文章/`.pages.yml`/`public/_headers`/四份文档；修正字体 CDN 不可达问题 |
 | v1.3 | 2026-11-13 | 实际上线形态修正为 **Cloudflare Workers（静态资源）**（非 Pages）：Worker 名 `blog`，`wrangler.jsonc` 补 `previews: {}`，根域与 `www` 均绑定 Custom Domain；头像与 favicon 换成自定义素材，修复页脚版权重复 |
 | v1.4 | 2026-11-14 | 首页视觉与功能迭代：关闭全站壁纸背景（`mode: "none"`，纯色 + 首页 hero 卡）、新增「每日一言」（一言 API + 首页/侧边栏展示 + 本地缓存与兜底 + 换一句）、清理模板与第三方文案（公告、英文横幅、追番/游戏/MAL 配置、Giscus、友链/相册/打赏/书签示例） |

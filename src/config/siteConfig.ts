@@ -48,7 +48,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: "记录技术、生活与思考",
 
 	// 站点 URL
-	site_url: "https://www.liveroom.dpdns.org",
+	site_url: "https://www.taosu.dpdns.org",
 
 	// 站点描述
 	description:

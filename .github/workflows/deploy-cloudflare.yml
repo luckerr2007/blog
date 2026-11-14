@@ -1,7 +1,7 @@
 name: Deploy production (Cloudflare Workers)
 
 # master 即生产：push 到 master 即构建并 wrangler deploy 到 Worker `blog`，
-# 也就是 www.liveroom.dpdns.org / liveroom.dpdns.org 直接换成新版本。
+# 也就是 www.taosu.dpdns.org / taosu.dpdns.org 直接换成新版本。
 on:
   push:
     branches: [master]

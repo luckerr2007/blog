@@ -1,4 +1,4 @@
-# Cloudflare Pages 响应头（替代 vercel.json，Pages 不读取 vercel.json）
+# Cloudflare 响应头（Pages 与 Workers 静态资源通用；vercel.json 不会被读取）
 # 文档: https://developers.cloudflare.com/pages/configuration/headers/
 
 /*

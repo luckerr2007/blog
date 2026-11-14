@@ -193,7 +193,7 @@ Pages 的配置如下：
 - 头像、favicon、站点信息和页脚已经替换为本站版本。
 - Pages CMS 的配置文件已经就位，接入 GitHub 授权后可以在网页或手机上发文。
 - 评论和统计保持关闭，`commentConfig.ts` 和 `analyticsConfig.ts` 已留好位置。
-- 域名指向 `www.liveroom.dpdns.org`，HTTPS 由 Cloudflare 自动签发。
+- 域名指向 `www.taosu.dpdns.org`，HTTPS 由 Cloudflare 自动签发。
 - RSS、Atom、sitemap 和 OG 图跟随构建生成，暂不需要额外维护。
 
 > 本文记录的是本站实际搭建过程，涉及的工具与版本可以在 `package.json`、`docs/CUSTOMIZATION.md` 和 workflow 文件中核对。

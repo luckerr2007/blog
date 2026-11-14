@@ -20,7 +20,7 @@
 
 ### siteConfig.ts
 - `title` → 桃苏的博客；`subtitle` → 记录技术、生活与思考
-- `site_url` → `https://www.liveroom.dpdns.org`
+- `site_url` → `https://www.taosu.dpdns.org`
 - `description` / `keywords` → 个人站表述
 - `navbar.title` → 桃苏的博客；`navbar.logo` 改为图标 `fa7-solid:seedling`（不再依赖模板的 firefly-*.png）
 - `siteStartDate` → `2026-11-13`
@@ -62,7 +62,7 @@
 | 新文章 | `src/content/posts/guide/how-this-blog-was-built.md` |
 | 新动态 | `src/content/dynamic/2026-11-13-213000.md` |
 | 关于页 | `src/content/spec/about.md` 重写为桃苏版本 |
-| 项目占位 | `src/content/projects/liveroom-blog.md`（项目页关闭，仅消除 glob loader 空目录告警） |
+| 项目占位 | `src/content/projects/taosu-blog.md`（项目页关闭，仅消除 glob loader 空目录告警） |
 | 静态页归档 | `friends.mdx`、`guestbook.md` → `_archive/spec/` |
 
 ## 四、未改动但需知道的点

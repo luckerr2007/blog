@@ -119,9 +119,9 @@ CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=xxx npx wrangler deploy
 
 ### 域名
 
-- 根域 `liveroom.dpdns.org` 与 `www.liveroom.dpdns.org` 均已绑定到 Worker `blog`（Custom Domain，HTTPS 自动签发）
+- 根域 `taosu.dpdns.org` 与 `www.taosu.dpdns.org` 均已绑定到 Worker `blog`（Custom Domain，HTTPS 自动签发）
 - 新增域名：Workers & Pages → blog → Settings → Domains & Routes → Add → Custom domain 填域名即可
-- 规范域名（canonical / sitemap / RSS）为 `https://www.liveroom.dpdns.org`，改域名时同步改 `siteConfig.site_url`
+- 规范域名（canonical / sitemap / RSS）为 `https://www.taosu.dpdns.org`，改域名时同步改 `siteConfig.site_url`
 
 ### 响应头与重定向
 
@@ -143,7 +143,7 @@ CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=xxx npx wrangler deploy
 需要开启时：
 
 1. 部署 Waline 后端（推荐 Cloudflare Workers + D1，或 Vercel 一键模板）；
-2. 设置环境变量：`SERVER_URL`、`SITE_NAME`、`SITE_URL=https://www.liveroom.dpdns.org`、`SECURE_DOMAINS`（含 `*.pages.dev` 预览域）；
+2. 设置环境变量：`SERVER_URL`、`SITE_NAME`、`SITE_URL=https://www.taosu.dpdns.org`、`SECURE_DOMAINS`（含 `*.pages.dev` 预览域）；
 3. 前端把 `type` 改成 `"waline"`，填 `waline.serverURL`；
 4. 需要留言板时再把 `pages.guestbook` 打开。
 

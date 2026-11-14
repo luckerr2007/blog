@@ -1,8 +1,8 @@
 # 桃苏的博客
 
-个人博客源码，Astro 静态生成，部署在 Cloudflare Pages。
+个人博客源码，Astro 静态生成，部署在 Cloudflare Workers。
 
-- 线上站点：https://www.liveroom.dpdns.org
+- 线上站点：https://www.taosu.dpdns.org
 - 代码仓库：https://github.com/luckerr2007/blog
 
 ## 快速开始
@@ -65,7 +65,7 @@ docs/                # 项目文档
 | 看板娘 / 音乐播放器 | ⛔ 已关闭 |
 | 评论区 | ⏸ 暂停，需要时再接 |
 | Pages CMS | 🧩 配置已就绪（`.pages.yml`） |
-| Cloudflare Workers | ✅ 已上线 https://www.liveroom.dpdns.org |
+| Cloudflare Workers | ✅ 已上线 https://www.taosu.dpdns.org |
 
 ## 版权
 
