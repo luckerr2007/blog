@@ -1,8 +1,8 @@
 name: Deploy to GitHub Pages
 
+# 仅手动触发：站点实际部署在 Cloudflare Workers（见 deploy-cloudflare.yml），
+# 这个 GitHub Pages 流程保留作备用，push 时不再运行，避免每次 push 都红叉。
 on:
-  push:
-    branches: [ master ]
   workflow_dispatch:
 
 # Pages 部署需要的权限
