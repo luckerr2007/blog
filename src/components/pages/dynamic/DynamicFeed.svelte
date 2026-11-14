@@ -327,9 +327,23 @@ onMount(() => {
 </script>
 
 {#if loading}
-	<div class="page-loading card-base" role="status">
-		<span class="page-loading-spinner" aria-hidden="true"></span>
-		<p>{loadingText}</p>
+	<div class="page-loading" role="status">
+		<span class="sr-only">{loadingText}</span>
+		<div class="page-feed" aria-hidden="true">
+			{#each [1, 2] as _}
+				<div class="page-entry page-entry-skeleton card-base">
+					<div class="page-skeleton-header">
+						<div class="skeleton page-skeleton-avatar"></div>
+						<div class="page-skeleton-identity">
+							<div class="skeleton page-skeleton-line page-skeleton-line--author"></div>
+							<div class="skeleton page-skeleton-line page-skeleton-line--meta"></div>
+						</div>
+					</div>
+					<div class="skeleton page-skeleton-line"></div>
+					<div class="skeleton page-skeleton-line page-skeleton-line--short"></div>
+				</div>
+			{/each}
+		</div>
 	</div>
 {:else if failed || entries.length === 0}
 	<div class="page-empty card-base">

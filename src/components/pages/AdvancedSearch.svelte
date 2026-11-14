@@ -151,8 +151,15 @@ const handleInput = () => {
     <!-- Results Area -->
     <div>
         {#if isSearching}
-            <div class="flex justify-center py-10">
-                <Icon icon="svg-spinners:ring-resize" class="text-4xl text-(--primary)" />
+            <div class="space-y-4" role="status">
+                <span class="sr-only">{i18n(I18nKey.searchLoading)}</span>
+                {#each [1, 2, 3] as _}
+                    <div class="card-base p-6 rounded-(--radius-large)" aria-hidden="true">
+                        <div class="skeleton mb-3 h-7 w-2/3"></div>
+                        <div class="skeleton mb-2 h-4 w-full"></div>
+                        <div class="skeleton h-4 w-5/6"></div>
+                    </div>
+                {/each}
             </div>
         {:else if results.length > 0}
             <div class="space-y-4">

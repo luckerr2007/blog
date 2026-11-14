@@ -156,7 +156,10 @@ function goToPage(page: number) {
   }
 
   .responsive-pagination button {
-    transition: all 0.2s ease-in-out;
+    transition:
+      color var(--dur-2) var(--ease-standard),
+      background-color var(--dur-2) var(--ease-standard),
+      border-color var(--dur-2) var(--ease-standard);
   }
 
   @media (prefers-contrast: high) {

@@ -163,10 +163,14 @@ pnpm install && pnpm check && ./command build
 | 按压 | 按钮 `scale(0.97)` + 100ms，触屏不做 hover 位移 |
 | 主题切换 | `runThemeTransition()` 用 View Transition 做圆形揭示（420ms spring），从触发元素扩散；不支持或 `prefers-reduced-motion` 时直接切换 |
 | 进度条 | 切页进度条与顶部阅读条统一 2px、去掉发光 |
+| 浮动面板 | `[data-floating-panel]` 开合统一 150ms（透明度 + `translate`），搜索/主题/显示设置/音乐面板不再硬切 |
+| 骨架屏 | 全局 `.skeleton`（1.4s shimmer）供侧栏、动态流、搜索页、媒体网格共用；减弱动效时静态 |
+| 列表筛选 | `.animate-fade-in-up`（180ms 上浮 4px）用于 gallery / friends / booknav 的筛选重排 |
 
 细节取舍：
 
 - 首屏 hero 不再单独淡入（主内容包装层已经淡入一次），避免 LCP 被两层动画推迟
 - 文章卡的布局切换仍用 PostPage 的 400ms，但 hover 位移单独收回到 180ms，避免「发木」
 - 只动 `transform` / `opacity`，不触发布局；焦点环不加过渡，保证键盘操作即时反馈
-- `prefers-reduced-motion: reduce` 时全站动画时长压到 0.01ms（含 View Transition）
+- Tailwind v4 的 `-translate-y-1` 落在独立的 `translate` 属性上，面板过渡必须写 `translate` 而不是 `transform`
+- `prefers-reduced-motion: reduce` 时全站动画时长压到 0.01ms（含 View Transition），骨架屏直接静止

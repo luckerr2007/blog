@@ -93,14 +93,14 @@ function formatDate(timestamp: number): string {
 	{#if loading}
 		<div class="skeleton-list" aria-hidden="true">
 			<div class="skeleton-item">
-				<div class="skeleton-line skeleton-line--meta"></div>
-				<div class="skeleton-line skeleton-line--body"></div>
-				<div class="skeleton-line skeleton-line--short"></div>
+				<div class="skeleton skeleton-line skeleton-line--meta"></div>
+				<div class="skeleton skeleton-line skeleton-line--body"></div>
+				<div class="skeleton skeleton-line skeleton-line--short"></div>
 			</div>
 			<div class="skeleton-item">
-				<div class="skeleton-line skeleton-line--meta"></div>
-				<div class="skeleton-line skeleton-line--body"></div>
-				<div class="skeleton-line skeleton-line--short"></div>
+				<div class="skeleton skeleton-line skeleton-line--meta"></div>
+				<div class="skeleton skeleton-line skeleton-line--body"></div>
+				<div class="skeleton skeleton-line skeleton-line--short"></div>
 			</div>
 		</div>
 	{:else if error || entries.length === 0}
@@ -170,14 +170,6 @@ function formatDate(timestamp: number): string {
 	.skeleton-line {
 		height: 0.6rem;
 		border-radius: 4px;
-		background: linear-gradient(
-			90deg,
-			var(--c-inset) 0%,
-			color-mix(in srgb, var(--c-fg) 8%, var(--c-inset)) 50%,
-			var(--c-inset) 100%
-		);
-		background-size: 200% 100%;
-		animation: skeleton-shimmer 1.4s var(--ease-standard) infinite;
 	}
 
 	.skeleton-line--meta {
@@ -191,20 +183,5 @@ function formatDate(timestamp: number): string {
 
 	.skeleton-line--short {
 		width: 64%;
-	}
-
-	@keyframes skeleton-shimmer {
-		from {
-			background-position: 180% 0;
-		}
-		to {
-			background-position: -80% 0;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.skeleton-line {
-			animation: none;
-		}
 	}
 </style>

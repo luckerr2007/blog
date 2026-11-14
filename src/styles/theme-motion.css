@@ -102,6 +102,60 @@ html.is-animating.is-leaving .transition-leaving {
 	box-shadow: none;
 }
 
+/* ── 浮动面板：开合 150ms。Tailwind v4 的 -translate-y-1 走独立 translate 属性，
+       必须一起过渡，否则只有透明度在动、位移是跳变 ───────────────── */
+/* 只作用于 floating-panel-utils 驱动的面板；.dropdown-content 有自己的一套位移 */
+.float-panel[data-floating-panel] {
+	transition:
+		opacity var(--dur-2) var(--ease-standard),
+		translate var(--dur-2) var(--ease-standard),
+		background-color var(--dur-3) var(--ease-standard),
+		border-color var(--dur-3) var(--ease-standard);
+}
+
+/* 显式 identity，保证 translate: none ↔ 0 -0.25rem 的插值在各浏览器一致 */
+.float-panel[data-floating-panel]:not(.float-panel-closed) {
+	translate: 0 0;
+}
+
+/* ── 列表筛选：卡片重新出现时轻微上浮（gallery / friends / booknav） ── */
+@keyframes list-enter {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-fade-in-up {
+	animation: list-enter var(--dur-3) var(--ease-decelerate) both;
+}
+
+/* ── 骨架屏：加载态共用一条 shimmer；尺寸由使用方决定 ───────── */
+@keyframes skeleton-shimmer {
+	from {
+		background-position: 180% 0;
+	}
+	to {
+		background-position: -80% 0;
+	}
+}
+
+.skeleton {
+	--skeleton-base: var(--btn-regular-bg, var(--c-inset));
+	background: linear-gradient(
+		90deg,
+		var(--skeleton-base) 0%,
+		color-mix(in srgb, var(--c-fg) 8%, var(--skeleton-base)) 50%,
+		var(--skeleton-base) 100%
+	);
+	background-size: 200% 100%;
+	animation: skeleton-shimmer 1.4s var(--ease-standard) infinite;
+}
+
 /* ── 卡片 / 按钮：统一时长与缓动 ───────────────────────────── */
 .card-base,
 .card-base-transparent {
@@ -200,6 +254,11 @@ html.is-animating.is-leaving .transition-leaving {
 	::view-transition-old(root),
 	::view-transition-new(root) {
 		animation: none !important;
+	}
+
+	.skeleton {
+		animation: none !important;
+		background-position: 0 0;
 	}
 }
 
