@@ -27,7 +27,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	// 关于
 	links.push(LinkPresets.About);
 
-
 	return { links } as NavBarConfig;
 };
 
