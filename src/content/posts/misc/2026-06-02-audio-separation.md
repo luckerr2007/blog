@@ -1,9 +1,12 @@
 ---
 title: 从一首歌里拆出鼓和贝斯
 published: 2026-06-02
+updated: 2026-11-14
 description: 开始折腾音频分离，不是为了做专业混音，而是想把练琴和扒谱的素材准备得干净一点。
 tags: [音频分离, MVSEP, 音乐]
-category: 音频工具
+category: 音频
+series: 声音笔记
+seriesOrder: 2
 comment: false
 ---
 
@@ -18,3 +21,7 @@ comment: false
 再往后，分离出来的分轨如果不只是听，而是要变成 MIDI，就又多了节拍、转写、后处理这些事。那是另一个坑，等整理完再写。
 
 现在这套流程还不完美：模型选择要靠试，分离质量看音源，云端排队时间也不稳定。但至少练琴的时候，不用再对着原曲反复拖进度条了。
+
+---
+
+后来把这条流程整理成了三篇：[MVSEP Studio](/posts/audio/mvsep-studio-local-pipeline/) 负责搜歌和云端分离，[LEMOM](/posts/audio/lemom-audio-to-midi/) 负责转写和 MIDI 后处理，[MusicParser](/posts/audio/musicparser-local-service/) 把解析核心拆成了本机 HTTP 服务。

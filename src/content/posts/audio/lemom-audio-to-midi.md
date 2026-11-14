@@ -4,7 +4,7 @@ published: 2026-11-14
 updated: 2026-11-14
 description: LEMOM 把云端分离、节拍分析、逐轨转写、声部清理和钢琴后处理串成一条本地链路，目标不是生成能发声的 MIDI，而是能直接进入 Logic 继续编辑的工程素材。本文记录各模型的职责边界、云端降级规则、后处理中的典型问题及 2.4.3 的验证结果。
 tags: [LEMOM, MIDI, MuScriptor, Apple Silicon]
-category: 音频工具
+category: 音频
 series: 音频工具三件套
 seriesOrder: 2
 comment: false

@@ -65,7 +65,7 @@
 - 根目录 `command` 一键启停脚本（含日志、PID、健康检查、幂等）。
 - 二次开发：站点身份（桃苏）、关闭看板娘/音乐、视觉、内容骨架、Waline 评论、Pages CMS 后台配置、SEO、性能。
 - Cloudflare Pages 部署（Git 集成 + 自定义域名 + 环境变量 + `_headers`）。
-- 首篇文章《这个博客是怎么搭建起来的》成稿发布。
+- 首篇文章《重建这个博客：从选型到上线》成稿发布。
 - 文档：`README.md`（个人使用说明）、`docs/WRITING.md`、`docs/OPERATIONS.md`、`docs/CUSTOMIZATION.md`。
 
 ### 3.2 Out of Scope
@@ -87,7 +87,7 @@
 | D3 | 评论系统 | **本期暂停**：`commentConfig.type = "none"`，留言板页面关闭；Waline 作为后续启用方案 | `src/config/commentConfig.ts`、`siteConfig.ts#pages.guestbook` |
 | D4 | 统计 | 暂不启用（预留 `analyticsConfig.ts`） | 二开阶段按需 |
 | D5 | 看板娘 / 音乐播放器 | **全部关闭** | `pioConfig.ts`（spine + live2d 双开关）、`musicConfig.ts`（`showInNavbar`/`showInSidebar` = false） |
-| D6 | 首批文章 | **1 篇：《这个博客是怎么搭建起来的》**（完整记录选型→本地→二开→Waline→Pages CMS→Cloudflare Pages） | `src/content/posts/` |
+| D6 | 首批文章 | **1 篇：《重建这个博客：从选型到上线》**（完整记录选型→本地→二开→Waline→Pages CMS→Cloudflare Pages） | `src/content/posts/` |
 | D7 | 站点语言 | `zh_CN` 单语 | `siteConfig.ts` |
 | D8 | 模板示例内容 | 归档到 `src/content/_archive/`，不参与构建 | 内容目录 |
 | D9 | 作者署名 | **桃苏**（站点标题 / profile / 页脚 / 文章默认 `author`） | `siteConfig.ts`、`profileConfig.ts`、`FooterConfig.html`、`.pages.yml` 默认值 |
@@ -165,7 +165,7 @@
 - 目录约定：`src/content/posts/<category>/<slug>.md`，配图 `src/content/posts/images/<slug>/`。
 - 移动端 375px 无横向溢出；暗色模式正常。
 
-#### M3-4 首篇文章《这个博客是怎么搭建起来的》（P0）
+#### M3-4 首篇文章《重建这个博客：从选型到上线》（P0）
 必含章节（也是交付文档）：
 1. 为什么选 Firefly（Astro 静态生成、性能、可定制）。
 2. 本地环境准备（Node 22、pnpm 11.22.0、克隆与安装）。
@@ -251,7 +251,7 @@ blog/
 ├── src/
 │   ├── config/               # 二开主战场（27 个配置）
 │   ├── content/
-│   │   ├── posts/            # 正式文章（含《这个博客是怎么搭建起来的》）
+│   │   ├── posts/            # 正式文章（含《重建这个博客：从选型到上线》）
 │   │   ├── dynamic/  projects/  spec/
 │   │   └── _archive/         # 模板示例内容（不构建）
 │   └── ...
@@ -335,7 +335,7 @@ blog/
 2. 根目录 `command` 脚本 + `docs/OPERATIONS.md`。
 3. 二次开发成果：桃苏站点身份、关闭看板娘/音乐、Waline 评论、`public/_headers`、SEO 与性能达标。
 4. `.pages.yml` + `docs/PAGES_CMS.md`（后台使用与字段对照）。
-5. 首篇文章《这个博客是怎么搭建起来的》。
+5. 首篇文章《重建这个博客：从选型到上线》。
 6. Cloudflare Pages 线上站点 + 自定义域名 + 验收记录 + 回滚步骤。
 7. 本 PRD（v1.1 作为变更基线）。
 

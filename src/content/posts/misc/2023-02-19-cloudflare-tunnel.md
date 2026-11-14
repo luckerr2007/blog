@@ -4,12 +4,14 @@ published: 2023-02-19
 description: 没有公网 IP，也不想在路由器上开端口，最后用 cloudflared 把内网服务接到 Cloudflare。
 tags: [Cloudflare Tunnel, 家庭服务器, 折腾]
 category: 折腾
+series: 家庭服务器
+seriesOrder: 2
 comment: false
 ---
 
 > 旧文存档：写于 2023 年 2 月，命令和配置以当时的 cloudflared 版本为准。
 
-家里的宽带没有公网 IP，以前用 frp 加一台小 VPS 做中转，能用，但多一台机器就多一份维护。后来看到 Cloudflare Tunnel，试了一下，把 frp 撤了。
+家里的宽带没有公网 IP，以前用 frp 加一台小 VPS 做中转，能用，但多一台机器就多一份维护。后来看到 Cloudflare Tunnel，试了一下，把 frp 撤了。这套服务跑在[那台旧笔记本](/posts/misc/2022-10-03-home-server/)上。
 
 安装很简单，macOS 上 `brew install cloudflared`，Linux 用官方仓库。登录、创建隧道、把服务写进配置：
 

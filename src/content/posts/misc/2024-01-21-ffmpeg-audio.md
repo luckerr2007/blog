@@ -1,9 +1,12 @@
 ---
 title: 用 ffmpeg 批量处理一批录音
 published: 2024-01-21
+updated: 2026-06-02
 description: 把几十段课程录音统一转成 m4a，做响度归一化，再按静音切段。
 tags: [FFmpeg, 音频, 工具]
 category: 工具
+series: 声音笔记
+seriesOrder: 1
 comment: false
 ---
 
@@ -38,3 +41,7 @@ ffmpeg -i input.m4a -af silencedetect=noise=-35dB:d=1.5 -f null -
 几个教训：先拿一个文件试参数，确认没问题再批量跑；保留原始文件，输出单独放目录；ffmpeg 的日志很多，重定向到文件里再查，别在终端里刷屏。
 
 处理完几十段录音，最大的感受是：命令行的价值不在于快，而在于下次还能原样跑一遍。
+
+---
+
+后记（2026-06）：后来开始折腾音频分离和 MIDI，这些命令行习惯一直用得上。那篇写在[《从一首歌里拆出鼓和贝斯》](/posts/misc/2026-06-02-audio-separation/)。

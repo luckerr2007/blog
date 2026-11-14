@@ -1,9 +1,12 @@
 ---
 title: 把吃灰的旧笔记本装成 Ubuntu 服务器
 published: 2022-10-03
+updated: 2023-02-19
 description: 一台 2016 年的 ThinkPad，装 Ubuntu Server 22.04，跑 Docker、Samba 和下载任务，顺便当备份盘。
 tags: [折腾, 家庭服务器, Ubuntu]
 category: 折腾
+series: 家庭服务器
+seriesOrder: 1
 comment: false
 ---
 
@@ -24,3 +27,7 @@ comment: false
 **备份。** 每周把重要目录 rsync 到一块外接硬盘，脚本写在 cron 里。没有做 RAID，也没有 UPS，重要数据还是留一份在云上。
 
 这套东西谈不上 NAS，只能说把闲置硬件利用起来了。稳定运行了一个月，最大的问题是 SSD 容量太小，下载多了要记得清理。
+
+---
+
+后记（2023-02）：后来用 Cloudflare Tunnel 把其中两个服务接了出去，过程写在[这里](/posts/misc/2023-02-19-cloudflare-tunnel/)。再往后换了一块 1TB SSD，这台机器一直跑到 2025 年。

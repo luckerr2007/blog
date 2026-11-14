@@ -4,7 +4,7 @@ published: 2026-11-14
 updated: 2026-11-14
 description: MusicParser 复用 LEMOM 的分离与转写核心，在 127.0.0.1:8777 提供一个 FastAPI 服务，包含任务队列、能力探测、单文件控制台和产物下载。本文记录它的接口契约、并发模型、进程管理与已知限制。
 tags: [MusicParser, FastAPI, 音频解析, 本地服务]
-category: 音频工具
+category: 音频
 series: 音频工具三件套
 seriesOrder: 3
 comment: false

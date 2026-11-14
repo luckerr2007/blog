@@ -4,7 +4,7 @@ published: 2026-11-14
 updated: 2026-11-14
 description: MVSEP Studio 是 MVSEP 的本地工作台：Express 负责代理与任务编排，前端负责搜歌、试听和打包。本文记录它的进程边界、任务状态机、轮询限流、结果缓存，以及网易云解析的端口冲突与已知限制。
 tags: [MVSEP, 网易云, 音频分离, Node.js]
-category: 音频工具
+category: 音频
 series: 音频工具三件套
 seriesOrder: 1
 comment: false

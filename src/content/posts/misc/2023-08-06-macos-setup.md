@@ -1,6 +1,7 @@
 ---
 title: 换到 Mac 之后，重新整理了一遍开发环境
 published: 2023-08-06
+updated: 2024-05-02
 description: 从 Windows 迁到 Apple Silicon，记录 Homebrew、终端、编辑器和几个常用工具的配置。
 tags: [macOS, 工具, 效率]
 category: 工具
@@ -24,3 +25,7 @@ comment: false
 迁移过程中最麻烦的是键盘。Command 和 Control 的位置换了，肌肉记忆改了差不多两周。其次是换行符和文件权限，Git 仓库里偶尔会出现整文件 diff，后来统一了 `.gitattributes` 才消停。
 
 环境这东西很个人化，别人的清单只能当参考。真正有用的配置，都是自己遇到问题之后补上的。
+
+---
+
+后记（2024-05）：后来把外接显示器换成 27 寸，桌面也重新整理了一遍，写在[《重新整理书桌》](/posts/misc/2024-05-02-desk-setup/)。
