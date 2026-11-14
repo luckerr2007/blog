@@ -1,7 +1,7 @@
 ---
-// 首页顶部欢迎区
-// 背景壁纸已关闭（backgroundWallpaper.mode = "none"），这里用一张卡片承担原先横幅的位置：
-// 站点标题 + 打字机副标题 + 每日一言，保持首页有「首屏内容」而不是直接进入文章列表。
+// 首页顶部欢迎区（参考站 editorial hero 风格）
+// 背景壁纸已关闭，这里用「通栏 + 下边框」的一屏文字承担首屏：
+// 状态点 + mono 问候语 → 大字标题（字距收紧 + 高亮条）→ 打字机副标题 → 每日一言
 import HitokotoQuote from "@/components/common/HitokotoQuote.astro";
 import TypewriterText from "@/components/features/TypewriterText.astro";
 import { backgroundWallpaper, siteConfig } from "@/config";
@@ -18,110 +18,131 @@ const showSubtitle = (homeText?.enable ?? true) && subtitleList.length > 0;
 const typewriter = homeText?.typewriter;
 ---
 
-<section
-	class="home-hero card-base onload-animation relative overflow-hidden px-6 py-8 md:px-10 md:py-10 mb-4"
-	aria-label="站点介绍"
->
-	<div class="home-hero-glow" aria-hidden="true"></div>
+<section class="home-hero onload-animation" aria-label="站点介绍">
+	<p class="home-hero-hello">欢迎来到我的小站</p>
 
-	<div class="relative flex flex-col items-center gap-3 text-center">
-		<p class="home-hero-eyebrow">Welcome</p>
+	<h2 class="home-hero-title">
+		{siteConfig.title}
+	</h2>
 
-		<div class="home-hero-title">
-			{siteConfig.title}
-		</div>
+	{
+		showSubtitle && (
+			<div class="home-hero-sub">
+				{typewriter?.enable !== false ? (
+					<TypewriterText
+						text={subtitleList}
+						speed={typewriter?.speed ?? 120}
+						deleteSpeed={typewriter?.deleteSpeed ?? 60}
+						pauseTime={typewriter?.pauseTime ?? 3200}
+					/>
+				) : (
+					subtitleList[0]
+				)}
+			</div>
+		)
+	}
 
-		{
-			showSubtitle && (
-				<div class="home-hero-subtitle">
-					{typewriter?.enable !== false ? (
-						<TypewriterText
-							text={subtitleList}
-							speed={typewriter?.speed ?? 120}
-							deleteSpeed={typewriter?.deleteSpeed ?? 60}
-							pauseTime={typewriter?.pauseTime ?? 3200}
-						/>
-					) : (
-						subtitleList[0]
-					)}
-				</div>
-			)
-		}
-
-		<div class="home-hero-divider" aria-hidden="true"></div>
-
-		{hitokotoConfig.enable && hitokotoConfig.showOnHome && (
-			<HitokotoQuote variant="hero" class="w-full" />
-		)}
-	</div>
+	{
+		hitokotoConfig.enable && hitokotoConfig.showOnHome && (
+			<div class="home-hero-quote">
+				<HitokotoQuote variant="hero" />
+			</div>
+		)
+	}
 </section>
 
 <style>
 	.home-hero {
-		background-image: linear-gradient(
-			135deg,
-			color-mix(in oklab, var(--primary) 10%, transparent),
-			transparent 55%
-		);
+		padding: 0.5rem 1rem 2.5rem;
+		margin-bottom: 0.5rem;
+		border-bottom: 1px solid var(--c-border);
 	}
 
-	.home-hero-glow {
-		position: absolute;
-		inset-inline: 0;
-		top: -60%;
-		height: 160%;
-		background: radial-gradient(
-			circle at 50% 0%,
-			color-mix(in oklab, var(--primary) 22%, transparent),
-			transparent 70%
-		);
-		pointer-events: none;
+	/* 状态点 + mono 问候语 */
+	.home-hero-hello {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0 0 1.1rem;
+		font-family: var(--mono-font);
+		font-size: 0.8125rem;
+		letter-spacing: 0.06em;
+		color: var(--c-fg-muted);
 	}
 
-	.home-hero-eyebrow {
-		margin: 0;
-		font-size: 0.7rem;
-		font-weight: 600;
-		letter-spacing: 0.32em;
-		text-transform: uppercase;
-		color: var(--primary);
-	}
-
-	.home-hero-title {
-		font-size: 1.75rem;
-		font-weight: 700;
-		line-height: 1.3;
-		color: var(--color-neutral-900, rgb(23 23 23));
-	}
-
-	:global(html.dark) .home-hero-title {
-		color: rgb(245 245 245);
-	}
-
-	.home-hero-subtitle {
-		min-height: 1.75rem;
-		font-size: 0.95rem;
-		color: var(--color-neutral-500, rgb(115 115 115));
-	}
-
-	:global(html.dark) .home-hero-subtitle {
-		color: rgb(163 163 163);
-	}
-
-	.home-hero-divider {
-		width: 3rem;
-		height: 2px;
+	.home-hero-hello::before {
+		content: "";
+		width: 8px;
+		height: 8px;
 		border-radius: 9999px;
-		background: color-mix(in oklab, var(--primary) 55%, transparent);
+		background: #34d399;
+		box-shadow: 0 0 0 3px rgb(52 211 153 / 25%);
+		animation: hero-pulse 2.4s var(--ref-ease) infinite;
+	}
+
+	/* 大字标题：字距收紧 + 底部高亮条 */
+	.home-hero-title {
+		position: relative;
+		display: block;
+		width: fit-content;
+		margin: 0;
+		font-size: clamp(2rem, 5.2vw + 0.6rem, 3.4rem);
+		font-weight: 700;
+		line-height: 1.08;
+		letter-spacing: -0.03em;
+		text-wrap: balance;
+		color: var(--c-fg);
+	}
+
+	.home-hero-title::after {
+		content: "";
+		position: absolute;
+		left: -0.08em;
+		right: -0.08em;
+		bottom: 0.02em;
+		height: 0.3em;
+		border-radius: 2px;
+		background: color-mix(in oklab, var(--c-fg) 12%, transparent);
+		z-index: -1;
+	}
+
+	.home-hero-sub {
+		min-height: 1.7rem;
+		margin-top: 1.1rem;
+		max-width: 36rem;
+		font-size: 1.0625rem;
+		line-height: 1.7;
+		color: var(--c-fg-muted);
+	}
+
+	.home-hero-quote {
+		max-width: 40rem;
+		margin-top: 1.5rem;
 	}
 
 	@media (min-width: 768px) {
-		.home-hero-title {
-			font-size: 2.1rem;
+		.home-hero {
+			padding-bottom: 3rem;
 		}
 
-		.home-hero-subtitle {
-			font-size: 1.05rem;
+		.home-hero-sub {
+			font-size: 1.125rem;
+		}
+	}
+
+	@keyframes hero-pulse {
+		0%,
+		100% {
+			box-shadow: 0 0 0 3px rgb(52 211 153 / 25%);
+		}
+		50% {
+			box-shadow: 0 0 0 7px rgb(52 211 153 / 0%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.home-hero-hello::before {
+			animation: none;
 		}
 	}
 </style>

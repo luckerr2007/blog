@@ -138,19 +138,23 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 
 	/* ── 首页 hero 变体 ───────────────────────────── */
 	.hitokoto-quote-hero {
-		max-width: 46rem;
-		margin: 0 auto;
-		text-align: center;
-		align-items: center;
+		max-width: 42rem;
+		align-items: flex-start;
+		text-align: left;
 	}
 
 	.hitokoto-quote-hero .hitokoto-text {
-		font-size: 1.05rem;
-		line-height: 1.9;
+		font-size: 1.0625rem;
+		line-height: 1.8;
+		color: var(--c-fg);
 	}
 
 	.hitokoto-quote-hero .hitokoto-source {
-		font-size: 0.85rem;
+		margin-top: 0.5rem;
+		font-family: var(--mono-font);
+		font-size: 0.78rem;
+		letter-spacing: 0.02em;
+		color: var(--c-fg-subtle);
 	}
 
 	/* ── 侧边栏变体 ───────────────────────────────── */

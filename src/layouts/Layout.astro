@@ -13,6 +13,7 @@ import SakuraEffect from "@components/features/SakuraEffect.astro";
 import WavesEffect from "@components/features/WavesEffect.astro";
 import ConfigCarrier from "@components/layout/ConfigCarrier.astro";
 import BrowserChrome from "@/components/layout/BrowserChrome.astro";
+import ScrollProgress from "@/components/layout/ScrollProgress.astro";
 
 import {
 	analyticsConfig,
@@ -42,6 +43,7 @@ import { getCanonicalUrl, url } from "@/utils/url-utils";
 import "@/styles/main.css";
 import "@/styles/immersive-reading.css";
 import "@/styles/variables.styl";
+import "@/styles/theme-monochrome.css";
 import "@rehype-callouts-theme";
 
 interface Props {
@@ -522,6 +524,7 @@ const ogImageAlt = propsOgImageAlt ?? pageTitle;
     ]}
   >
     <BrowserChrome />
+    <ScrollProgress />
     <!-- 首帧前按运行时壁纸模式翻转卡片透明类（布局已由 data-wallpaper-mode 属性规则接管） -->
     <script is:inline>
       (function () {

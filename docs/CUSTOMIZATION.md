@@ -116,3 +116,21 @@ pnpm install && pnpm check && ./command build
 - `siteConfig.ts`：bilibili / bangumi / vndb / mal 的 ID 与 Client ID 清空（对应页面本就关闭）
 - `commentConfig.ts`：Giscus 仓库与分类 ID 清空（`type: "none"`）
 - `friendsConfig.ts` / `galleryConfig.ts` / `sponsorConfig.ts` / `booknavConfig.ts`：删除 CuteLeaf 演示友链、相册、打赏方式与书签，保留字段格式注释
+
+## 七、灰阶视觉复刻（v1.5）
+
+参考 blog.toubiec.cn 的设计令牌，把主题从「绿色系 + 大圆角」改成「纯灰阶 + 小圆角 + mono 小标题」。只覆盖变量与装饰，不改布局与组件结构。
+
+| 文件 | 说明 |
+| --- | --- |
+| `src/styles/theme-monochrome.css` | 新增。灰阶令牌（`--c-*`）、覆盖 Firefly 主题变量、圆角收紧到 8px、1px 边框卡片 + 悬浮位移、毛玻璃顶栏、mono 元信息、暗色反色修正 |
+| `src/components/layout/ScrollProgress.astro` | 新增。顶部 2px 阅读进度条（rAF 节流，尊重 `prefers-reduced-motion`） |
+| `src/components/layout/HomeHero.astro` | 重写为 editorial hero：状态点 + mono 问候语、大字标题（字距 -0.03em + 12% 前景色高亮条）、打字机副标题、每日一言 |
+| `src/components/common/HitokotoQuote.astro` | hero 变体改为左对齐、出处用 mono |
+| `src/layouts/Layout.astro` | 在 `variables.styl` 之后引入覆盖样式；body 内挂载 `<ScrollProgress />` |
+
+要点：
+
+- 强调色 `--primary` 直接取前景色（明 `#16161a` / 暗 `#e8e8ea`），因此所有用 `bg-(--primary)` 的组件自动变成黑白反色；暗色下分类胶囊的 `color: white` 需要改写成 `var(--c-bg)`（已处理）
+- 卡片圆角来自 `--radius-large`（16px → 8px），按钮/输入框 3px
+- 想换回彩色主题：删掉 `Layout.astro` 里的 `theme-monochrome.css` 引入即可，`variables.styl` 未被修改

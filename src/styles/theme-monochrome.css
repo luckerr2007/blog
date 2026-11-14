@@ -1,0 +1,278 @@
+/* ==========================================================================
+   参考站（blog.toubiec.cn）设计令牌复刻
+   --------------------------------------------------------------------------
+   只覆盖颜色 / 圆角 / 少量装饰，不动布局与组件结构：
+   - 纯灰阶：强调色 = 前景色，去掉 oklch 色相
+   - 小圆角：卡片 8px（原 --radius-large 16px）
+   - mono 元信息、字距收紧的大标题、1px 边框卡片 + 悬浮位移
+   - 半透明毛玻璃顶栏（纯色背景模式下也生效）
+   ========================================================================== */
+
+/* ── 灰阶令牌 ─────────────────────────────────────────────── */
+:root {
+	--c-bg: #ffffff;
+	--c-bg-soft: #fafafa;
+	--c-bg-inset: #f4f4f5;
+	--c-fg: #16161a;
+	--c-fg-muted: #5f5f66;
+	--c-fg-subtle: #94949c;
+	--c-border: #e7e7ea;
+	--c-border-strong: #c9c9d0;
+	--c-selection: #d9d9de;
+
+	--mono-font:
+		ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+		"Liberation Mono", monospace;
+	--ref-ease: cubic-bezier(0.2, 0.6, 0.25, 1);
+}
+
+:root.dark {
+	--c-bg: #101012;
+	--c-bg-soft: #17171a;
+	--c-bg-inset: #1d1d21;
+	--c-fg: #e8e8ea;
+	--c-fg-muted: #9b9ba3;
+	--c-fg-subtle: #6e6e77;
+	--c-border: #26262b;
+	--c-border-strong: #3a3a42;
+	--c-selection: #34343c;
+}
+
+/* ── 覆盖 Firefly 主题变量（明色） ─────────────────────────── */
+:root {
+	--primary: var(--c-fg);
+	--page-bg: var(--c-bg-soft);
+	--card-bg: var(--c-bg);
+	--card-bg-transparent: color-mix(in srgb, var(--c-bg) 72%, transparent);
+
+	--btn-content: var(--c-fg);
+	--btn-regular-bg: var(--c-bg-inset);
+	--btn-regular-bg-hover: color-mix(in srgb, var(--c-fg) 8%, var(--c-bg-inset));
+	--btn-regular-bg-active: color-mix(in srgb, var(--c-fg) 14%, var(--c-bg-inset));
+	--btn-plain-bg-hover: var(--c-bg-inset);
+	--btn-plain-bg-active: var(--c-bg-soft);
+	--btn-card-bg-hover: var(--c-bg-soft);
+	--btn-card-bg-active: var(--c-bg-inset);
+
+	--deep-text: var(--c-fg);
+	--title-active: var(--c-fg-muted);
+	--line-divider: var(--c-border);
+	--line-color: var(--c-border);
+	--meta-divider: var(--c-border-strong);
+	--content-meta: var(--c-fg-muted);
+
+	--inline-code-bg: var(--c-bg-inset);
+	--inline-code-color: var(--c-fg);
+	--muted: var(--c-bg-inset);
+	--selection-bg: var(--c-selection);
+	--codeblock-bg: #16161a;
+	--codeblock-topbar-bg: #23232a;
+	--license-block-bg: rgb(22 22 26 / 3%);
+
+	--link-underline: var(--c-border-strong);
+	--link-hover: var(--c-bg-inset);
+	--link-active: var(--c-border);
+	--float-panel-bg: var(--c-bg);
+
+	--toc-badge-bg: var(--c-bg-inset);
+	--toc-btn-hover: var(--c-bg-inset);
+	--toc-btn-active: var(--c-border);
+	--toc-indicator-bg: var(--c-bg-inset);
+	--toc-item-active: var(--c-fg);
+
+	--navbar-glass-highlight: rgb(255 255 255 / 60%);
+	--navbar-glass-hairline: var(--c-border);
+
+	/* 小圆角：卡片 8px，按钮/输入框 3–6px */
+	--radius-sm: 2px;
+	--radius-md: 3px;
+	--radius-lg: 6px;
+	--radius-xl: 8px;
+	--radius-2xl: 10px;
+	--radius-3xl: 14px;
+	--radius-large: 8px;
+}
+
+/* ── 覆盖 Firefly 主题变量（暗色，特异性需高于 .dark 原定义） ── */
+:root.dark {
+	--primary: var(--c-fg);
+	--page-bg: var(--c-bg);
+	--card-bg: var(--c-bg-soft);
+	--card-bg-transparent: color-mix(in srgb, var(--c-bg-soft) 72%, transparent);
+
+	--btn-content: var(--c-fg);
+	--btn-regular-bg: var(--c-bg-inset);
+	--btn-regular-bg-hover: color-mix(in srgb, var(--c-fg) 10%, var(--c-bg-inset));
+	--btn-regular-bg-active: color-mix(in srgb, var(--c-fg) 16%, var(--c-bg-inset));
+	--btn-plain-bg-hover: var(--c-bg-inset);
+	--btn-plain-bg-active: var(--c-bg-soft);
+	--btn-card-bg-hover: var(--c-bg-inset);
+	--btn-card-bg-active: var(--c-border);
+
+	--deep-text: var(--c-fg);
+	--title-active: var(--c-fg-muted);
+	--line-divider: var(--c-border);
+	--line-color: var(--c-border);
+	--meta-divider: var(--c-border-strong);
+	--content-meta: var(--c-fg-muted);
+
+	--inline-code-bg: var(--c-bg-inset);
+	--inline-code-color: var(--c-fg);
+	--muted: var(--c-bg-inset);
+	--selection-bg: var(--c-selection);
+	--codeblock-bg: #0b0b0d;
+	--codeblock-topbar-bg: #16161a;
+	--license-block-bg: #0b0b0d;
+
+	--link-underline: var(--c-border-strong);
+	--link-hover: var(--c-bg-inset);
+	--link-active: var(--c-border);
+	--float-panel-bg: var(--c-bg-soft);
+
+	--toc-badge-bg: var(--c-bg-inset);
+	--toc-btn-hover: var(--c-bg-inset);
+	--toc-btn-active: var(--c-border);
+	--toc-indicator-bg: var(--c-bg-inset);
+	--toc-item-active: var(--c-fg);
+
+	--navbar-glass-highlight: rgb(255 255 255 / 6%);
+	--navbar-glass-hairline: rgb(255 255 255 / 10%);
+}
+
+/* ── 基础外观 ─────────────────────────────────────────────── */
+::selection {
+	background: var(--c-selection);
+	color: var(--c-fg);
+}
+
+:focus-visible {
+	outline: 2px solid var(--c-fg);
+	outline-offset: 3px;
+}
+
+/* ── 顶栏：半透明毛玻璃（纯色背景模式下也生效） ───────────── */
+html:not([data-has-wallpaper]) #navbar > div {
+	--navbar-surface-blur: 20px;
+	background: color-mix(in srgb, var(--c-bg) 72%, transparent) !important;
+	box-shadow:
+		inset 0 1px 0 var(--navbar-glass-highlight),
+		0 1px 0 var(--navbar-glass-hairline) !important;
+}
+
+#navbar {
+	border-radius: 0;
+}
+
+#navbar.navbar-sticky-shadow {
+	box-shadow: none;
+}
+
+/* ── 卡片：1px 边框 + 悬浮位移 ─────────────────────────────── */
+.card-base,
+.card-base-transparent {
+	border: 1px solid var(--c-border);
+	transition:
+		border-color 0.25s var(--ref-ease),
+		box-shadow 0.25s var(--ref-ease),
+		transform 0.25s var(--ref-ease);
+}
+
+.post-card-wrapper {
+	border-color: var(--c-border);
+}
+
+.post-card-wrapper:hover {
+	transform: translateY(-2px);
+	border-color: var(--c-border-strong);
+	box-shadow: 0 10px 30px -14px rgb(22 22 26 / 16%);
+}
+
+:root.dark .post-card-wrapper:hover {
+	box-shadow: 0 12px 32px -14px rgb(0 0 0 / 75%);
+}
+
+.post-card-wrapper img {
+	transition: transform 0.4s var(--ref-ease);
+}
+
+.post-card-wrapper:hover img {
+	transform: scale(1.025);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.post-card-wrapper,
+	.post-card-wrapper img {
+		transition: none;
+	}
+
+	.post-card-wrapper:hover {
+		transform: none;
+	}
+
+	.post-card-wrapper:hover img {
+		transform: none;
+	}
+}
+
+/* ── 元信息：等宽 + 小字距 ─────────────────────────────────── */
+.post-meta,
+.post-meta *,
+.card-header-meta {
+	font-family: var(--mono-font);
+	letter-spacing: 0.02em;
+}
+
+/* 分类胶囊：等宽计数 + 暗色模式下的反色文字 */
+.category-pill .pill-count {
+	font-family: var(--mono-font);
+}
+
+:root.dark .category-pill[data-active],
+:root.dark .category-pill[data-category-name=""][data-active],
+:root.dark .category-pill[data-active]:hover {
+	color: var(--c-bg);
+}
+
+:root.dark .category-pill[data-active] .pill-count {
+	background: rgb(0 0 0 / 15%);
+}
+
+/* 标签：等宽小字 */
+.tag,
+.post-tag {
+	font-family: var(--mono-font);
+	letter-spacing: 0.02em;
+}
+
+/* 侧边栏小标题：mono + 字距，向参考站的 section-label 靠拢 */
+.widget-title {
+	letter-spacing: 0.01em;
+}
+
+.widget-title .widget-name {
+	font-family: var(--mono-font);
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--c-fg-muted);
+}
+
+.widget-title::before {
+	width: 2px;
+	border-radius: 1px;
+}
+
+/* 导航栏链接：小字 + 字距 */
+#navbar .nav-link,
+#navbar .navbar-link {
+	letter-spacing: 0.01em;
+}
+
+/* 输入框 / 按钮圆角收紧后维持对齐 */
+.btn-regular,
+.btn-plain,
+input:not([type="range"]),
+textarea {
+	border-radius: var(--radius-md);
+}
