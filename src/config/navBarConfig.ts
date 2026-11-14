@@ -27,20 +27,6 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 	// 关于
 	links.push(LinkPresets.About);
 
-	// 外链
-	links.push({
-		name: "链接",
-		url: "#",
-		icon: "material-symbols:link",
-		children: [
-			{
-				name: "GitHub",
-				url: "https://github.com/luckerr2007/blog",
-				external: true,
-				icon: "fa7-brands:github",
-			},
-		],
-	});
 
 	return { links } as NavBarConfig;
 };

@@ -1,58 +1,70 @@
 /* ==========================================================================
-   参考站（blog.toubiec.cn）设计令牌复刻
+   视觉令牌：参考站（灰阶 editorial）+ Apple HIG（材质 / 圆角 / 动效）
    --------------------------------------------------------------------------
    只覆盖颜色 / 圆角 / 少量装饰，不动布局与组件结构：
-   - 纯灰阶：强调色 = 前景色，去掉 oklch 色相
-   - 小圆角：卡片 8px（原 --radius-large 16px）
-   - mono 元信息、字距收紧的大标题、1px 边框卡片 + 悬浮位移
-   - 半透明毛玻璃顶栏（纯色背景模式下也生效）
+   - 颜色取 Apple 系统色（grouped background / label / separator）
+   - 圆角取 Apple 尺度，并优先使用 continuous corner（corner-shape: squircle）
+   - 顶栏是材质层（blur + saturate），支持 reduce-transparency / reduce-contrast
+   - 动效使用 Apple 的 spring 曲线，按压有反馈
    ========================================================================== */
 
-/* ── 灰阶令牌 ─────────────────────────────────────────────── */
+/* ── 系统色令牌（Apple 语义色） ───────────────────────────── */
 :root {
-	--c-bg: #ffffff;
-	--c-bg-soft: #fafafa;
-	--c-bg-inset: #f4f4f5;
-	--c-fg: #16161a;
-	--c-fg-muted: #5f5f66;
-	--c-fg-subtle: #94949c;
-	--c-border: #e7e7ea;
-	--c-border-strong: #c9c9d0;
-	--c-selection: #d9d9de;
+	/* 背景：systemGroupedBackground */
+	--c-bg: #f2f2f7;
+	/* 卡片：secondarySystemGroupedBackground */
+	--c-card: #ffffff;
+	/* 填充：tertiarySystemFill */
+	--c-inset: rgb(118 118 128 / 12%);
+
+	/* 文本：label / secondaryLabel / tertiaryLabel */
+	--c-fg: #1c1c1e;
+	--c-fg-muted: rgb(60 60 67 / 60%);
+	--c-fg-subtle: rgb(60 60 67 / 30%);
+
+	/* 分隔线：separator */
+	--c-border: rgb(60 60 67 / 14%);
+	--c-border-strong: rgb(60 60 67 / 29%);
+	--c-selection: rgb(60 60 67 / 20%);
 
 	--mono-font:
 		ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
 		"Liberation Mono", monospace;
-	--ref-ease: cubic-bezier(0.2, 0.6, 0.25, 1);
+	/* Apple 的 spring 曲线（略带回弹） */
+	--ref-ease: cubic-bezier(0.32, 0.72, 0, 1);
+	--ref-ease-out: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 :root.dark {
-	--c-bg: #101012;
-	--c-bg-soft: #17171a;
-	--c-bg-inset: #1d1d21;
-	--c-fg: #e8e8ea;
-	--c-fg-muted: #9b9ba3;
-	--c-fg-subtle: #6e6e77;
-	--c-border: #26262b;
-	--c-border-strong: #3a3a42;
-	--c-selection: #34343c;
+	/* 背景：systemBackground（纯黑，让 OLED 与材质分层更明显） */
+	--c-bg: #000000;
+	--c-card: #1c1c1e;
+	--c-inset: rgb(118 118 128 / 24%);
+
+	--c-fg: #f5f5f7;
+	--c-fg-muted: rgb(235 235 245 / 60%);
+	--c-fg-subtle: rgb(235 235 245 / 30%);
+
+	--c-border: rgb(84 84 88 / 40%);
+	--c-border-strong: rgb(84 84 88 / 65%);
+	--c-selection: rgb(120 120 128 / 36%);
 }
 
 /* ── 覆盖 Firefly 主题变量（明色） ─────────────────────────── */
 :root {
 	--primary: var(--c-fg);
-	--page-bg: var(--c-bg-soft);
-	--card-bg: var(--c-bg);
-	--card-bg-transparent: color-mix(in srgb, var(--c-bg) 72%, transparent);
+	--page-bg: var(--c-bg);
+	--card-bg: var(--c-card);
+	--card-bg-transparent: color-mix(in srgb, var(--c-card) 72%, transparent);
 
 	--btn-content: var(--c-fg);
-	--btn-regular-bg: var(--c-bg-inset);
-	--btn-regular-bg-hover: color-mix(in srgb, var(--c-fg) 8%, var(--c-bg-inset));
-	--btn-regular-bg-active: color-mix(in srgb, var(--c-fg) 14%, var(--c-bg-inset));
-	--btn-plain-bg-hover: var(--c-bg-inset);
-	--btn-plain-bg-active: var(--c-bg-soft);
-	--btn-card-bg-hover: var(--c-bg-soft);
-	--btn-card-bg-active: var(--c-bg-inset);
+	--btn-regular-bg: var(--c-inset);
+	--btn-regular-bg-hover: color-mix(in srgb, var(--c-fg) 8%, var(--c-inset));
+	--btn-regular-bg-active: color-mix(in srgb, var(--c-fg) 14%, var(--c-inset));
+	--btn-plain-bg-hover: var(--c-inset);
+	--btn-plain-bg-active: color-mix(in srgb, var(--c-fg) 6%, var(--c-inset));
+	--btn-card-bg-hover: var(--c-card);
+	--btn-card-bg-active: var(--c-inset);
 
 	--deep-text: var(--c-fg);
 	--title-active: var(--c-fg-muted);
@@ -61,52 +73,52 @@
 	--meta-divider: var(--c-border-strong);
 	--content-meta: var(--c-fg-muted);
 
-	--inline-code-bg: var(--c-bg-inset);
+	--inline-code-bg: var(--c-inset);
 	--inline-code-color: var(--c-fg);
-	--muted: var(--c-bg-inset);
+	--muted: var(--c-inset);
 	--selection-bg: var(--c-selection);
-	--codeblock-bg: #16161a;
-	--codeblock-topbar-bg: #23232a;
-	--license-block-bg: rgb(22 22 26 / 3%);
+	--codeblock-bg: #1c1c1e;
+	--codeblock-topbar-bg: #2c2c2e;
+	--license-block-bg: rgb(118 118 128 / 8%);
 
 	--link-underline: var(--c-border-strong);
-	--link-hover: var(--c-bg-inset);
+	--link-hover: var(--c-inset);
 	--link-active: var(--c-border);
-	--float-panel-bg: var(--c-bg);
+	--float-panel-bg: var(--c-card);
 
-	--toc-badge-bg: var(--c-bg-inset);
-	--toc-btn-hover: var(--c-bg-inset);
+	--toc-badge-bg: var(--c-inset);
+	--toc-btn-hover: var(--c-inset);
 	--toc-btn-active: var(--c-border);
-	--toc-indicator-bg: var(--c-bg-inset);
+	--toc-indicator-bg: var(--c-inset);
 	--toc-item-active: var(--c-fg);
 
-	--navbar-glass-highlight: rgb(255 255 255 / 60%);
+	--navbar-glass-highlight: rgb(255 255 255 / 70%);
 	--navbar-glass-hairline: var(--c-border);
 
-	/* 小圆角：卡片 8px，按钮/输入框 3–6px */
-	--radius-sm: 2px;
-	--radius-md: 3px;
-	--radius-lg: 6px;
-	--radius-xl: 8px;
-	--radius-2xl: 10px;
-	--radius-3xl: 14px;
-	--radius-large: 8px;
+	/* Apple 圆角尺度：控件 8–10，卡片 12，弹层 16–22 */
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 10px;
+	--radius-xl: 12px;
+	--radius-2xl: 16px;
+	--radius-3xl: 22px;
+	--radius-large: 12px;
 }
 
 /* ── 覆盖 Firefly 主题变量（暗色，特异性需高于 .dark 原定义） ── */
 :root.dark {
 	--primary: var(--c-fg);
 	--page-bg: var(--c-bg);
-	--card-bg: var(--c-bg-soft);
-	--card-bg-transparent: color-mix(in srgb, var(--c-bg-soft) 72%, transparent);
+	--card-bg: var(--c-card);
+	--card-bg-transparent: color-mix(in srgb, var(--c-card) 72%, transparent);
 
 	--btn-content: var(--c-fg);
-	--btn-regular-bg: var(--c-bg-inset);
-	--btn-regular-bg-hover: color-mix(in srgb, var(--c-fg) 10%, var(--c-bg-inset));
-	--btn-regular-bg-active: color-mix(in srgb, var(--c-fg) 16%, var(--c-bg-inset));
-	--btn-plain-bg-hover: var(--c-bg-inset);
-	--btn-plain-bg-active: var(--c-bg-soft);
-	--btn-card-bg-hover: var(--c-bg-inset);
+	--btn-regular-bg: var(--c-inset);
+	--btn-regular-bg-hover: color-mix(in srgb, var(--c-fg) 10%, var(--c-inset));
+	--btn-regular-bg-active: color-mix(in srgb, var(--c-fg) 16%, var(--c-inset));
+	--btn-plain-bg-hover: var(--c-inset);
+	--btn-plain-bg-active: color-mix(in srgb, var(--c-fg) 6%, var(--c-inset));
+	--btn-card-bg-hover: var(--c-card);
 	--btn-card-bg-active: var(--c-border);
 
 	--deep-text: var(--c-fg);
@@ -116,23 +128,23 @@
 	--meta-divider: var(--c-border-strong);
 	--content-meta: var(--c-fg-muted);
 
-	--inline-code-bg: var(--c-bg-inset);
+	--inline-code-bg: var(--c-inset);
 	--inline-code-color: var(--c-fg);
-	--muted: var(--c-bg-inset);
+	--muted: var(--c-inset);
 	--selection-bg: var(--c-selection);
-	--codeblock-bg: #0b0b0d;
-	--codeblock-topbar-bg: #16161a;
-	--license-block-bg: #0b0b0d;
+	--codeblock-bg: #0b0b0c;
+	--codeblock-topbar-bg: #1c1c1e;
+	--license-block-bg: #0b0b0c;
 
 	--link-underline: var(--c-border-strong);
-	--link-hover: var(--c-bg-inset);
+	--link-hover: var(--c-inset);
 	--link-active: var(--c-border);
-	--float-panel-bg: var(--c-bg-soft);
+	--float-panel-bg: var(--c-card);
 
-	--toc-badge-bg: var(--c-bg-inset);
-	--toc-btn-hover: var(--c-bg-inset);
+	--toc-badge-bg: var(--c-inset);
+	--toc-btn-hover: var(--c-inset);
 	--toc-btn-active: var(--c-border);
-	--toc-indicator-bg: var(--c-bg-inset);
+	--toc-indicator-bg: var(--c-inset);
 	--toc-item-active: var(--c-fg);
 
 	--navbar-glass-highlight: rgb(255 255 255 / 6%);
@@ -140,6 +152,12 @@
 }
 
 /* ── 基础外观 ─────────────────────────────────────────────── */
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
 ::selection {
 	background: var(--c-selection);
 	color: var(--c-fg);
@@ -150,10 +168,32 @@
 	outline-offset: 3px;
 }
 
-/* ── 顶栏：半透明毛玻璃（纯色背景模式下也生效） ───────────── */
+/* ── Continuous corner（Apple squircle） ───────────────────── */
+/* Chrome 139+ 支持；不支持的浏览器退回普通圆角，视觉差异很小 */
+@supports (corner-shape: squircle) {
+	:where(
+			.card-base,
+			.card-base-transparent,
+			.post-card-wrapper,
+			.post-card-cover,
+			.btn-regular,
+			.btn-plain,
+			.btn-card,
+			.category-pill,
+			.tag,
+			.post-tag,
+			input:not([type="range"]),
+			textarea,
+			.home-hero-title::after
+		) {
+		corner-shape: squircle;
+	}
+}
+
+/* ── 顶栏：材质层（blur + saturate），遵守 reduce-transparency ── */
 html:not([data-has-wallpaper]) #navbar > div {
 	--navbar-surface-blur: 20px;
-	background: color-mix(in srgb, var(--c-bg) 72%, transparent) !important;
+	background: color-mix(in srgb, var(--c-card) 72%, transparent) !important;
 	box-shadow:
 		inset 0 1px 0 var(--navbar-glass-highlight),
 		0 1px 0 var(--navbar-glass-hairline) !important;
@@ -167,14 +207,15 @@ html:not([data-has-wallpaper]) #navbar > div {
 	box-shadow: none;
 }
 
-/* ── 卡片：1px 边框 + 悬浮位移 ─────────────────────────────── */
+/* ── 卡片：发丝边框 + 轻悬浮（Apple 用层级而非重阴影） ────── */
 .card-base,
 .card-base-transparent {
 	border: 1px solid var(--c-border);
 	transition:
-		border-color 0.25s var(--ref-ease),
-		box-shadow 0.25s var(--ref-ease),
-		transform 0.25s var(--ref-ease);
+		border-color 0.24s var(--ref-ease),
+		box-shadow 0.24s var(--ref-ease),
+		transform 0.24s var(--ref-ease),
+		background-color 0.24s var(--ref-ease);
 }
 
 .post-card-wrapper {
@@ -182,36 +223,30 @@ html:not([data-has-wallpaper]) #navbar > div {
 }
 
 .post-card-wrapper:hover {
-	transform: translateY(-2px);
+	transform: translateY(-1px);
 	border-color: var(--c-border-strong);
-	box-shadow: 0 10px 30px -14px rgb(22 22 26 / 16%);
+	box-shadow: 0 8px 24px -16px rgb(0 0 0 / 28%);
 }
 
 :root.dark .post-card-wrapper:hover {
-	box-shadow: 0 12px 32px -14px rgb(0 0 0 / 75%);
+	box-shadow: 0 10px 28px -16px rgb(0 0 0 / 90%);
 }
 
 .post-card-wrapper img {
-	transition: transform 0.4s var(--ref-ease);
+	transition: transform 0.35s var(--ref-ease-out);
 }
 
 .post-card-wrapper:hover img {
-	transform: scale(1.025);
+	transform: scale(1.02);
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.post-card-wrapper,
-	.post-card-wrapper img {
-		transition: none;
-	}
-
-	.post-card-wrapper:hover {
-		transform: none;
-	}
-
-	.post-card-wrapper:hover img {
-		transform: none;
-	}
+/* 按压反馈（Apple 的 0.96 缩放 + 过渡） */
+.btn-regular:active,
+.btn-plain:active,
+.icon-btn:active,
+#navbar .btn-regular:active {
+	transform: scale(0.96);
+	transition-duration: 0.1s;
 }
 
 /* ── 元信息：等宽 + 小字距 ─────────────────────────────────── */
@@ -222,7 +257,6 @@ html:not([data-has-wallpaper]) #navbar > div {
 	letter-spacing: 0.02em;
 }
 
-/* 分类胶囊：等宽计数 + 暗色模式下的反色文字 */
 .category-pill .pill-count {
 	font-family: var(--mono-font);
 }
@@ -263,7 +297,7 @@ html:not([data-has-wallpaper]) #navbar > div {
 	border-radius: 1px;
 }
 
-/* 导航栏链接：小字 + 字距 */
+/* 导航栏链接 */
 #navbar .nav-link,
 #navbar .navbar-link {
 	letter-spacing: 0.01em;
@@ -275,4 +309,69 @@ html:not([data-has-wallpaper]) #navbar > div {
 input:not([type="range"]),
 textarea {
 	border-radius: var(--radius-md);
+}
+
+/* ── Apple 细节：暗色卡片内高光、触控命中区、药丸最小高度 ──── */
+:root.dark .card-base,
+:root.dark .card-base-transparent {
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+}
+
+/* HIG 建议最小命中区 44×44；视觉尺寸不变，用伪元素扩展热区 */
+@media (pointer: coarse) {
+	#navbar button.btn-plain,
+	#navbar a.btn-plain,
+	#navbar .btn-regular {
+		position: relative;
+	}
+
+	#navbar button.btn-plain::after,
+	#navbar a.btn-plain::after,
+	#navbar .btn-regular::after {
+		content: "";
+		position: absolute;
+		inset: -3px;
+	}
+
+	.category-pill {
+		min-height: 34px;
+	}
+}
+
+/* ── 无障碍：降低透明度 / 提高对比 / 降低动效 ─────────────── */
+@media (prefers-reduced-transparency: reduce) {
+	html:not([data-has-wallpaper]) #navbar > div {
+		--navbar-surface-blur: 0px;
+		background: var(--c-card) !important;
+	}
+}
+
+@media (prefers-contrast: more) {
+	:root {
+		--c-border: var(--c-border-strong);
+		--c-fg-muted: var(--c-fg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.post-card-wrapper,
+	.post-card-wrapper img,
+	.card-base,
+	.card-base-transparent {
+		transition: none;
+	}
+
+	.post-card-wrapper:hover {
+		transform: none;
+	}
+
+	.post-card-wrapper:hover img {
+		transform: none;
+	}
+
+	.btn-regular:active,
+	.btn-plain:active,
+	.icon-btn:active {
+		transform: none;
+	}
 }

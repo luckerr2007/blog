@@ -86,10 +86,11 @@ const typewriter = homeText?.typewriter;
 		display: block;
 		width: fit-content;
 		margin: 0;
-		font-size: clamp(2rem, 5.2vw + 0.6rem, 3.4rem);
+		/* Apple Large Title 比例：34–52px，字距随字号收紧 */
+		font-size: clamp(2.125rem, 4.8vw + 0.9rem, 3.25rem);
 		font-weight: 700;
-		line-height: 1.08;
-		letter-spacing: -0.03em;
+		line-height: 1.06;
+		letter-spacing: -0.022em;
 		text-wrap: balance;
 		color: var(--c-fg);
 	}

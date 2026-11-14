@@ -131,6 +131,19 @@ pnpm install && pnpm check && ./command build
 
 要点：
 
-- 强调色 `--primary` 直接取前景色（明 `#16161a` / 暗 `#e8e8ea`），因此所有用 `bg-(--primary)` 的组件自动变成黑白反色；暗色下分类胶囊的 `color: white` 需要改写成 `var(--c-bg)`（已处理）
-- 卡片圆角来自 `--radius-large`（16px → 8px），按钮/输入框 3px
+- 强调色 `--primary` 取前景色，所有用 `bg-(--primary)` 的组件自动黑白反色；暗色下分类胶囊原本写死 `color: white`，已改成 `var(--c-bg)`
 - 想换回彩色主题：删掉 `Layout.astro` 里的 `theme-monochrome.css` 引入即可，`variables.styl` 未被修改
+
+### Apple HIG 叠加（v1.6）
+
+| 项 | 做法 |
+| --- | --- |
+| 颜色 | 改用 Apple 语义色：明 `systemGroupedBackground #f2f2f7` + 卡片 `#ffffff`；暗 `#000000` + 卡片 `#1c1c1e`；label / separator 用带透明度的系统值 |
+| 圆角 | Apple 尺度：控件 8–10px、卡片 12px、弹层 16–22px |
+| Continuous corner | `@supports (corner-shape: squircle)` 时对卡片/按钮/胶囊/输入框启用 squircle（Chrome 139+），否则优雅退回普通圆角 |
+| 材质 | 顶栏 `blur(20px) + 72% 卡片色`；`prefers-reduced-transparency` 时退化为不透明 |
+| 动效 | 统一 `cubic-bezier(0.32, 0.72, 0, 1)`；按钮按压 `scale(0.96)`；`prefers-reduced-motion` 全关 |
+| 命中区 | 触屏设备上导航按钮用伪元素把热区扩到 ≥44px（视觉尺寸不变） |
+| 无障碍 | `prefers-contrast: more` 时加粗分隔线、次级文字提为正文色 |
+
+同时移除了导航栏「链接 → GitHub」分组（`navBarConfig.ts`），页脚与侧栏资料卡里的 GitHub 入口保留。
