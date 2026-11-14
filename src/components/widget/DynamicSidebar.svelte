@@ -92,13 +92,16 @@ function formatDate(timestamp: number): string {
 <div class="flex flex-col gap-1.5">
 	{#if loading}
 		<div class="skeleton-list" aria-hidden="true">
-			{#each Array(2) as _, index (index)}
-				<div class="skeleton-item">
-					<div class="skeleton-line skeleton-line--meta"></div>
-					<div class="skeleton-line skeleton-line--body"></div>
-					<div class="skeleton-line skeleton-line--short"></div>
-				</div>
-			{/each}
+			<div class="skeleton-item">
+				<div class="skeleton-line skeleton-line--meta"></div>
+				<div class="skeleton-line skeleton-line--body"></div>
+				<div class="skeleton-line skeleton-line--short"></div>
+			</div>
+			<div class="skeleton-item">
+				<div class="skeleton-line skeleton-line--meta"></div>
+				<div class="skeleton-line skeleton-line--body"></div>
+				<div class="skeleton-line skeleton-line--short"></div>
+			</div>
 		</div>
 	{:else if error || entries.length === 0}
 		<p class="m-0 p-3 text-center text-sm text-neutral-500">

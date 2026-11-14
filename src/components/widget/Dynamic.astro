@@ -34,7 +34,8 @@ const memos = dynamicConfig.memos;
 			class={className}
 			style={style}
 		>
-			<DynamicSidebar client:visible apiUrl={apiUrl} limit={limit} {memos} />
+			{/* client:visible 时宿主元素尺寸为 0，IntersectionObserver 永不触发，组件会一直停在加载态 */}
+			<DynamicSidebar client:idle apiUrl={apiUrl} limit={limit} {memos} />
 			<a
 				class="btn-plain mt-2 flex items-center justify-center gap-1 rounded-lg p-1.5
 					text-sm text-(--primary)"
