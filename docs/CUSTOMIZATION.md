@@ -148,3 +148,25 @@ pnpm install && pnpm check && ./command build
 | 无障碍 | `prefers-contrast: more` 时加粗分隔线、次级文字提为正文色 |
 
 同时移除了导航栏「链接 → GitHub」分组（`navBarConfig.ts`），页脚与侧栏资料卡里的 GitHub 入口保留。
+
+## 八、动效层（v1.7）
+
+新增 `src/styles/theme-motion.css`，把全站动画收敛成一套 token，参照 Material 3 / Apple HIG / Fluent 2 的时长与缓动约定。
+
+| 项 | 值 |
+| --- | --- |
+| 时长 | `--dur-1` 100ms（按压）、`--dur-2` 150ms（微交互）、`--dur-3` 180ms（常规）、`--dur-4` 260ms（入场）、`--dur-5` 420ms（主题揭示） |
+| 缓动 | `--ease-standard` (.2,0,0,1)、`--ease-decelerate` (.05,.7,.1,1)、`--ease-accelerate` (.3,0,.8,.15)、`--ease-spring` (.32,.72,0,1) |
+| 位移 | 换页/入场统一 8px，出场 6px（原来 32px 偏大） |
+| 换页 | 入场 180ms 标准曲线，离场 150ms 加速曲线 |
+| 入场 | `.onload-animation` 260ms 减速曲线，延迟 30ms 递增、第 6 个后封顶；主内容包装层 180ms |
+| 按压 | 按钮 `scale(0.97)` + 100ms，触屏不做 hover 位移 |
+| 主题切换 | `runThemeTransition()` 用 View Transition 做圆形揭示（420ms spring），从触发元素扩散；不支持或 `prefers-reduced-motion` 时直接切换 |
+| 进度条 | 切页进度条与顶部阅读条统一 2px、去掉发光 |
+
+细节取舍：
+
+- 首屏 hero 不再单独淡入（主内容包装层已经淡入一次），避免 LCP 被两层动画推迟
+- 文章卡的布局切换仍用 PostPage 的 400ms，但 hover 位移单独收回到 180ms，避免「发木」
+- 只动 `transform` / `opacity`，不触发布局；焦点环不加过渡，保证键盘操作即时反馈
+- `prefers-reduced-motion: reduce` 时全站动画时长压到 0.01ms（含 View Transition）
