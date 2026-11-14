@@ -24,8 +24,10 @@ export const hitokotoConfig: HitokotoConfig = {
 	// 单次请求超时（毫秒）
 	timeout: 8000,
 
-	// 缓存有效期（小时）：12 小时即每天前后各刷新一次，换一句按钮可强制刷新
-	cacheHours: 12,
+	// 自动轮换间隔（小时）：每次在 1–6 小时之间取随机值，避免整点刷新的机械感。
+	// 页面一直开着时由定时器自动换；重新打开页面时沿用未过期的缓存。
+	rotateMinHours: 1,
+	rotateMaxHours: 6,
 
 	// 接口不可用时的兜底句子（按日期轮换）
 	fallbacks: [

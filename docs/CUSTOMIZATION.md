@@ -97,17 +97,18 @@ pnpm install && pnpm check && ./command build
 
 | 文件 | 作用 |
 | --- | --- |
-| `src/types/hitokotoConfig.ts` | 配置类型（接口列表、超时、缓存时长、兜底句子） |
-| `src/config/hitokotoConfig.ts` | 一言接口与兜底文案（默认分类 i 诗词 / k 哲学） |
-| `src/utils/hitokoto-client.ts` | 浏览器端取数：localStorage 缓存（默认 12h）→ 依次请求接口 → 本地兜底 |
-| `src/components/common/HitokotoQuote.astro` | 展示组件（`hero` / `widget` 两种变体）+「换一句」按钮 |
+| `src/types/hitokotoConfig.ts` | 配置类型（接口列表、超时、轮换区间、兜底句子） |
+| `src/config/hitokotoConfig.ts` | 一言接口与兜底文案（默认分类 i 诗词 / k 哲学，轮换 1–6 小时） |
+| `src/utils/hitokoto-client.ts` | 浏览器端取数：localStorage 缓存（每条随机 1–6h 到期）→ 依次请求接口 → 本地兜底 |
+| `src/components/common/HitokotoQuote.astro` | 展示组件（`hero` / `widget` 两种变体），定时自动轮换，无手动按钮 |
 | `src/components/widget/Hitokoto.astro` | 侧边栏小组件 |
 | `src/components/layout/HomeHero.astro` | 首页顶部欢迎区（站点标题 + 打字机副标题 + 每日一言） |
 
 - 新增组件类型 `hitokoto`：`src/types/sidebarConfig.ts` 的 `WidgetComponentType`、`src/components/layout/SideBar.astro` 的 `componentMap`
 - `sidebarConfig.ts`：移除 `music` 组件，左栏与移动端底部各新增 `hitokoto`
 - `src/pages/[...page].astro`：仅第 1 页渲染 `<HomeHero />`
-- 请求带时间戳参数绕开一言 CDN 的 URL 缓存，保证「换一句」每次都会换
+- 轮换逻辑：每条句子写入时随机取 1–6 小时 TTL；页面常开用定时器到点换，切回前台若已过期立即换；Swup 换页后从缓存补同一句
+- 请求带时间戳参数绕开一言 CDN 的 URL 缓存，保证每次轮换都真的换
 - SSR 先输出按日期轮换的兜底句子，接口失败或断网时页面保持可读
 
 ### 文案清理

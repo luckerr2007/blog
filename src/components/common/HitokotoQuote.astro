@@ -2,12 +2,12 @@
 // 每日一言展示组件（首页顶部 + 侧边栏共用）
 // SSR 先渲染按日期轮换的本地句子，客户端再尝试用一言接口替换，失败则保持不变，
 // 因此首屏不会空白，也不会因为接口挂掉而破版。
-import { Icon } from "astro-icon/components";
+// 没有手动刷新按钮：每 1–6 小时随机换一句（间隔由 hitokotoConfig 指定）。
 import { hitokotoConfig } from "@/config/hitokotoConfig";
 import { getDailyFallback, getQuoteSourceLabel } from "@/utils/hitokoto-client";
 
 interface Props {
-	// hero：首页顶部，居中大字；widget：侧边栏，紧凑排版
+	// hero：首页顶部，左对齐大字；widget：侧边栏，紧凑排版
 	variant?: "hero" | "widget";
 	// 是否显示出处
 	showSource?: boolean;
@@ -43,15 +43,6 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 				</p>
 			)}
 		</div>
-		<button
-			type="button"
-			class="hitokoto-refresh"
-			data-hitokoto-refresh
-			title="换一句"
-			aria-label="换一句"
-		>
-			<Icon name="material-symbols:refresh-rounded" class="hitokoto-refresh-icon" aria-hidden="true" />
-		</button>
 	</div>
 )}
 
@@ -59,7 +50,6 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 	.hitokoto-quote {
 		display: flex;
 		align-items: flex-start;
-		gap: 0.5rem;
 	}
 
 	.hitokoto-body {
@@ -89,43 +79,6 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 		display: none;
 	}
 
-	.hitokoto-refresh {
-		flex: none;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		height: 1.75rem;
-		width: 1.75rem;
-		border-radius: 9999px;
-		color: var(--primary);
-		opacity: 0.6;
-		transition:
-			opacity 0.2s ease,
-			background-color 0.2s ease,
-			transform 0.2s ease;
-	}
-
-	.hitokoto-refresh:hover {
-		opacity: 1;
-		background-color: color-mix(in oklab, var(--primary) 12%, transparent);
-	}
-
-	.hitokoto-refresh:active {
-		transform: scale(0.9);
-	}
-
-	.hitokoto-refresh-icon {
-		font-size: 1.1rem;
-	}
-
-	[data-hitokoto-state="loading"] .hitokoto-refresh-icon {
-		animation: hitokoto-spin 0.9s linear infinite;
-	}
-
-	[data-hitokoto-state="loading"] .hitokoto-text {
-		opacity: 0.55;
-	}
-
 	.hitokoto-text,
 	.hitokoto-source {
 		transition: opacity 0.25s ease;
@@ -139,7 +92,6 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 	/* ── 首页 hero 变体 ───────────────────────────── */
 	.hitokoto-quote-hero {
 		max-width: 42rem;
-		align-items: flex-start;
 		text-align: left;
 	}
 
@@ -179,16 +131,9 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 		}
 	}
 
-	@keyframes hitokoto-spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
 	@media (prefers-reduced-motion: reduce) {
 		.hitokoto-updated .hitokoto-text,
-		.hitokoto-updated .hitokoto-source,
-		[data-hitokoto-state="loading"] .hitokoto-refresh-icon {
+		.hitokoto-updated .hitokoto-source {
 			animation: none;
 		}
 	}
@@ -196,15 +141,19 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 
 <script>
 	import { hitokotoConfig } from "@/config/hitokotoConfig";
+	import type { HitokotoQuote } from "@/types/hitokotoConfig";
 	import {
+		getCacheRemainingMs,
 		getQuoteSourceLabel,
 		loadQuote,
+		randomRotateTtlMs,
+		readCachedQuote,
 	} from "@/utils/hitokoto-client";
-	import type { HitokotoQuote } from "@/types/hitokotoConfig";
 
 	const selector = "[data-hitokoto]";
-	// 首页顶部与侧边栏可能同时存在，共享同一个请求，避免重复打接口
+	// 首页顶部与侧边栏可能同时存在，共享同一个请求与同一个定时器
 	let pending: Promise<HitokotoQuote | null> | null = null;
+	let timer: number | undefined;
 
 	const getRoots = (): HTMLElement[] =>
 		Array.from(document.querySelectorAll<HTMLElement>(selector));
@@ -214,23 +163,11 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 		const sourceElement =
 			root.querySelector<HTMLElement>("[data-hitokoto-source]");
 		if (textElement) textElement.textContent = quote.text;
-		if (sourceElement) {
-			sourceElement.textContent = getQuoteSourceLabel(quote);
-		}
+		if (sourceElement) sourceElement.textContent = getQuoteSourceLabel(quote);
 		root.classList.remove("hitokoto-updated");
-		// 强制重排，保证连续点击「换一句」时动画都会重放
+		// 强制重排，保证每次自动轮换时淡入动画都会重放
 		void root.offsetWidth;
 		root.classList.add("hitokoto-updated");
-	};
-
-	const setLoading = (loading: boolean): void => {
-		for (const root of getRoots()) {
-			root.dataset.hitokotoState = loading ? "loading" : "ok";
-			const button = root.querySelector<HTMLButtonElement>(
-				"[data-hitokoto-refresh]",
-			);
-			if (button) button.disabled = loading;
-		}
 	};
 
 	const applyQuote = (quote: HitokotoQuote | null): void => {
@@ -243,37 +180,51 @@ const initialSource = initial ? getQuoteSourceLabel(initial) : "";
 			applyQuote(await pending);
 			return;
 		}
-		setLoading(true);
 		pending = loadQuote(hitokotoConfig, { force });
 		try {
 			applyQuote(await pending);
 		} finally {
 			pending = null;
-			setLoading(false);
 		}
+	};
+
+	// 按「本期句子的剩余有效期」安排下一次轮换；
+	// 没有缓存（比如接口全挂、用的是兜底句子）时，退回到 1–6 小时的随机间隔重试
+	const scheduleNext = (): void => {
+		const remaining = getCacheRemainingMs();
+		const delay = remaining > 0 ? remaining : randomRotateTtlMs(hitokotoConfig);
+		for (const root of getRoots()) {
+			root.dataset.hitokotoNext = String(Math.round(delay));
+		}
+		if (timer) clearTimeout(timer);
+		timer = window.setTimeout(() => {
+			void rotate();
+		}, delay);
+	};
+
+	const rotate = async (): Promise<void> => {
+		await ensureQuote(true);
+		scheduleNext();
 	};
 
 	const init = (): void => {
-		const roots = getRoots();
-		if (roots.length === 0) return;
-
-		for (const root of roots) {
-			const button = root.querySelector<HTMLButtonElement>(
-				"[data-hitokoto-refresh]",
-			);
-			if (!button || button.dataset.hitokotoBound === "true") continue;
-			button.dataset.hitokotoBound = "true";
-			button.addEventListener("click", () => {
-				void ensureQuote(true);
-			});
-		}
-
-		void ensureQuote(false);
+		if (getRoots().length === 0) return;
+		// Swup 换页后 DOM 换了新的，先用缓存里的同一句覆盖 SSR 兜底，再排下一次轮换
+		applyQuote(readCachedQuote());
+		void ensureQuote(false).then(scheduleNext);
 	};
 
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", init, { once: true });
-	} else {
+	init();
+
+	// Swup 客户端换页不会重新执行模块脚本，需要在内容替换后补一次
+	document.addEventListener("swup:contentReplaced", () => {
 		init();
-	}
+	});
+
+	// 长时间开着的标签页切回前台时，如果这一句已经过期就立刻换
+	document.addEventListener("visibilitychange", () => {
+		if (document.visibilityState !== "visible") return;
+		if (getCacheRemainingMs() > 0) return;
+		void rotate();
+	});
 </script>

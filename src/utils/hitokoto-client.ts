@@ -1,13 +1,14 @@
 import type { HitokotoQuote } from "@/types/hitokotoConfig";
 
-// 每日一言的浏览器端取数与缓存逻辑
+// 每日一言的浏览器端取数与轮换逻辑
 // 由 components/common/HitokotoQuote.astro 的客户端脚本调用，因此这里不能引用任何
 // 只能跑在服务端的模块（astro:content、fs 等）。
 
 export interface HitokotoRuntimeConfig {
 	apis: string[];
 	timeout: number;
-	cacheHours: number;
+	rotateMinHours: number;
+	rotateMaxHours: number;
 	fallbacks: HitokotoQuote[];
 }
 
@@ -15,11 +16,15 @@ interface HitokotoCacheEntry {
 	quote: HitokotoQuote;
 	// 写入时间戳（毫秒）
 	at: number;
+	// 该条句子的到期时间戳（毫秒），到期后自动换下一句
+	expiresAt: number;
 }
 
 // 缓存键带版本号，方便以后调整结构时自然失效
 const CACHE_KEY = "hitokoto:quote:v1";
 const DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
+const MIN_TTL_MS = 60 * 1000;
 
 // 按日期轮换兜底句子：同一天内 SSR 与客户端结果一致，避免内容跳动
 export function getDailyFallback(
@@ -43,6 +48,18 @@ export function getQuoteSourceLabel(quote: HitokotoQuote): string {
 	return `—— ${author || from}`;
 }
 
+// 每轮在 [rotateMinHours, rotateMaxHours] 之间取一个随机时长，
+// 避免「整点准时换」的机械感，也避免多个访客同时打接口
+export function randomRotateTtlMs(config: HitokotoRuntimeConfig): number {
+	const lower = Math.max(
+		0,
+		Math.min(config.rotateMinHours, config.rotateMaxHours),
+	);
+	const upper = Math.max(config.rotateMinHours, config.rotateMaxHours);
+	const hours = lower + Math.random() * (upper - lower);
+	return Math.max(MIN_TTL_MS, Math.round(hours * HOUR_MS));
+}
+
 function getStorage(): Storage | null {
 	try {
 		if (typeof window === "undefined" || !window.localStorage) return null;
@@ -53,31 +70,48 @@ function getStorage(): Storage | null {
 	}
 }
 
-function readCache(cacheHours: number): HitokotoQuote | null {
-	if (cacheHours <= 0) return null;
+function readEntry(): HitokotoCacheEntry | null {
 	const storage = getStorage();
 	if (!storage) return null;
 	try {
 		const raw = storage.getItem(CACHE_KEY);
 		if (!raw) return null;
 		const entry = JSON.parse(raw) as HitokotoCacheEntry;
-		if (!entry?.quote?.text) return null;
-		const expired = Date.now() - entry.at > cacheHours * 60 * 60 * 1000;
-		return expired ? null : entry.quote;
+		if (!entry?.quote?.text || !entry.expiresAt) return null;
+		return entry;
 	} catch {
 		return null;
 	}
 }
 
-function writeCache(quote: HitokotoQuote): void {
+function writeEntry(quote: HitokotoQuote, ttlMs: number): void {
 	const storage = getStorage();
 	if (!storage) return;
 	try {
-		const entry: HitokotoCacheEntry = { quote, at: Date.now() };
+		const now = Date.now();
+		const entry: HitokotoCacheEntry = {
+			quote,
+			at: now,
+			expiresAt: now + ttlMs,
+		};
 		storage.setItem(CACHE_KEY, JSON.stringify(entry));
 	} catch {
 		// 存储配额满或被禁用，忽略即可，不影响展示
 	}
+}
+
+// 当前这条句子还剩多久到期（毫秒）；0 表示没有缓存或已过期
+export function getCacheRemainingMs(): number {
+	const entry = readEntry();
+	if (!entry) return 0;
+	return Math.max(0, entry.expiresAt - Date.now());
+}
+
+// 读取当前未过期的缓存句子（Swup 换页后把同一句补到新 DOM 上）
+export function readCachedQuote(): HitokotoQuote | null {
+	const entry = readEntry();
+	if (!entry) return null;
+	return entry.expiresAt > Date.now() ? entry.quote : null;
 }
 
 async function requestOnce(
@@ -86,7 +120,7 @@ async function requestOnce(
 ): Promise<HitokotoQuote | null> {
 	if (typeof fetch !== "function") return null;
 	// 一言的 CDN 会按完整 URL 缓存，短时间内重复请求同一 URL 会拿到同一句；
-	// 加一个随机参数让每次「换一句」都真正换（接口会忽略未知参数）
+	// 加一个随机参数让每次轮换都真正换（接口会忽略未知参数）
 	let requestUrl = url;
 	try {
 		const parsed = new URL(url);
@@ -127,21 +161,22 @@ async function requestOnce(
 	}
 }
 
-// 取一条句子：优先读缓存，其次依次请求接口，全部失败时回退到本地兜底
-// force 为 true 时跳过缓存（侧边栏 / 首页的「换一句」按钮）
+// 取一条句子：缓存未过期就直接用，否则依次请求接口；全部失败时回退到本地兜底。
+// force 为 true 时跳过缓存（自动轮换到点）。
+// 兜底句子不写缓存：避免一次网络故障把「本地句子」钉住几个小时。
 export async function loadQuote(
 	config: HitokotoRuntimeConfig,
 	options: { force?: boolean } = {},
 ): Promise<HitokotoQuote | null> {
 	if (!options.force) {
-		const cached = readCache(config.cacheHours);
-		if (cached) return cached;
+		const entry = readEntry();
+		if (entry && entry.expiresAt > Date.now()) return entry.quote;
 	}
 
 	for (const api of config.apis) {
 		const quote = await requestOnce(api, config.timeout);
 		if (quote) {
-			writeCache(quote);
+			writeEntry(quote, randomRotateTtlMs(config));
 			return quote;
 		}
 	}

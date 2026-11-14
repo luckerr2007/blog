@@ -21,8 +21,10 @@ export type HitokotoConfig = {
 	apis: string[];
 	// 单次请求超时（毫秒）
 	timeout: number;
-	// 缓存有效期（小时），同一天内避免重复请求；0 表示不缓存
-	cacheHours: number;
+	// 自动轮换的最短间隔（小时）
+	rotateMinHours: number;
+	// 自动轮换的最长间隔（小时）
+	rotateMaxHours: number;
 	// 接口全部失败时使用的本地句子，按日期轮换，保证内容永远可读
 	fallbacks: HitokotoQuote[];
 };
