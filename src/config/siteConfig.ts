@@ -55,14 +55,7 @@ export const siteConfig: SiteConfig = {
 		"桃苏的个人博客，记录技术、生活与思考。基于 Astro 与 Firefly 主题构建，关注前端、工具链与日常折腾。",
 
 	// 站点关键词
-	keywords: [
-		"桃苏",
-		"博客",
-		"Astro",
-		"Firefly",
-		"静态博客",
-		"技术笔记",
-	],
+	keywords: ["桃苏", "博客", "Astro", "Firefly", "静态博客", "技术笔记"],
 
 	// 主题色
 	themeColor: {

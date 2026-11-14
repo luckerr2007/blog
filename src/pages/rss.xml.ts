@@ -4,7 +4,6 @@ import { formatDateI18nWithTime } from "@utils/date-utils";
 import { renderFeedEntries } from "@utils/feed-utils";
 import type { APIContext } from "astro";
 import { siteConfig } from "@/config";
-import pkg from "../../package.json";
 
 export const prerender = true;
 
