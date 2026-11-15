@@ -24,8 +24,13 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		children: [LinkPresets.Archive, LinkPresets.Categories, LinkPresets.Tags],
 	});
 
-	// 留言
-	links.push(LinkPresets.Guestbook);
+	// 留言：留言板 / 动态
+	links.push({
+		name: "留言",
+		url: "#",
+		icon: "material-symbols:chat",
+		children: [LinkPresets.Guestbook, LinkPresets.Dynamic],
+	});
 
 	// 关于
 	links.push(LinkPresets.About);
@@ -75,7 +80,7 @@ export const LinkPresets: Record<string, NavBarLink> = {
 		pageKey: "friends",
 	},
 	Guestbook: {
-		name: "留言",
+		name: "留言板",
 		url: "/guestbook/",
 		icon: "material-symbols:chat",
 		pageKey: "guestbook",
