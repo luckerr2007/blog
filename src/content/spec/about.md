@@ -42,4 +42,4 @@
 - GitHub：[luckerr2007](https://github.com/luckerr2007)
 - 订阅：[RSS](/rss/) · [Atom](/atom/)
 
-> 评论由 Giscus 提供，需要 GitHub 账号登录。也可以去[留言板](/guestbook/)随便说点什么，或者到 GitHub 仓库提 issue。
+> 评论由 Waline 提供，可以匿名留言，也可以登录后评论。也可以去[留言板](/guestbook/)随便说点什么，或者到 GitHub 仓库提 issue。

@@ -144,21 +144,17 @@ npx wrangler deploy --config workers/redirect/wrangler.jsonc
 
 见 [PAGES_CMS.md](./PAGES_CMS.md)。
 
-## 六、评论系统（Giscus）
+## 六、评论系统（Waline）
 
-`src/config/commentConfig.ts` 里 `type: "giscus"`，`siteConfig.pages.guestbook = true`。
+`src/config/commentConfig.ts` 里 `type: "waline"`，`siteConfig.pages.guestbook = true`。
 
-- 仓库：`luckerr2007/blog`
-- 分类：`General`
-- 映射：`pathname`，文章页和 `/guestbook/` 各自创建一个 Discussion
-- 仓库需启用 Discussions，并安装 [giscus App](https://github.com/apps/giscus)
-- 访客需要 GitHub 账号登录；未登录时评论区会显示登录提示
+- 后端：`https://waline.taosu.dpdns.org`
+- Worker：`waline`，D1 数据库：`waline-db`
+- 管理面板：`https://waline.taosu.dpdns.org/ui`
+- 管理员凭据：`~/.waline-admin`（0600）
+- 源码与运维细节见 [WALINE.md](./WALINE.md)
 
-如果以后要换成 Waline：
-
-1. 部署 Waline 后端（Cloudflare Workers + D1 或 Vercel 一键模板）；
-2. 设置 `SERVER_URL`、`SITE_NAME`、`SITE_URL=https://www.taosu.dpdns.org`、`SECURE_DOMAINS`；
-3. 前端把 `type` 改成 `"waline"`，填 `waline.serverURL`。
+前端配置在 `commentConfig.waline`，匿名评论和登录评论都允许。需要换后端时只改 `serverURL`。
 
 ## 七、日常维护
 

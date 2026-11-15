@@ -65,7 +65,7 @@ docs/                # 项目文档
 | 本地开发 / 构建 | ✅ 通过（`pnpm check` 0 error，构建约 100 秒） |
 | 一键脚本 | ✅ 全部子命令实测通过 |
 | 看板娘 / 音乐播放器 | ⛔ 已关闭 |
-| 评论区 | ✅ Giscus（需 GitHub 登录） |
+| 评论区 | ✅ Waline（匿名可评） |
 | Pages CMS | 🧩 配置已就绪（`.pages.yml`） |
 | Cloudflare Workers | ✅ 已上线 https://www.taosu.dpdns.org |
 
