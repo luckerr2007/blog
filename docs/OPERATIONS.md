@@ -154,7 +154,7 @@ npx wrangler deploy --config workers/redirect/wrangler.jsonc
 - 管理员凭据：`~/.waline-admin`（0600）
 - 源码与运维细节见 [WALINE.md](./WALINE.md)
 
-前端配置在 `commentConfig.waline`，匿名评论和登录评论都允许。需要换后端时只改 `serverURL`。
+前端配置在 `commentConfig.waline`，已关闭登录，仅允许匿名评论。需要换后端时只改 `serverURL`。
 
 ## 七、日常维护
 

@@ -54,7 +54,7 @@ pnpm exec wrangler d1 export waline-db --remote --output=backup.sql
 
 - 该 Worker 实现了评论、用户、审核、反垃圾、导入导出和管理面板，但 **SMTP 邮件通知、Turnstile 服务端校验、上游 `COMMENT_AUDIT` 变量尚未接入**。
 - 反垃圾在管理面板的自定义设置页配置。
-- 匿名评论可用；登录用户可使用邮箱密码或已接入的 OAuth。
+- 前端不显示登录入口，只允许匿名评论；管理员仍通过 `/ui` 登录。实现方式是保留 Waline 的 `login: "enable"` 以显示昵称/邮箱字段，在 `Waline.astro` 中用 CSS 隐藏登录按钮。
 - 删除 D1 数据库会丢失全部评论，操作前先导出 `backup.sql`。
 
 ## 本地修改

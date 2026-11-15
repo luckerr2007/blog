@@ -33,6 +33,11 @@ const config = {
 </div>
 
 <style is:global>
+  /* 前端不提供登录入口：保留昵称/邮箱字段，只隐藏登录按钮 */
+  #waline .wl-info button[type="button"] {
+    display: none !important;
+  }
+
   /* 各分类表情数量不同，切换时面板布局会跟着变，下面逐项消除 */
 
   .wl-tab-wrapper {

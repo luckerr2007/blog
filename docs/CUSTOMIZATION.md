@@ -43,7 +43,7 @@
 
 ### commentConfig.ts
 - 已启用 Waline：`type: "waline"`，后端 `https://waline.taosu.dpdns.org`
-- 匿名评论可用，也支持登录；`visitorCount: true` 开启阅读量
+- 仅匿名评论：前端保留 `login: "enable"` 以显示昵称/邮箱字段，`Waline.astro` 里隐藏了登录按钮；`visitorCount: true` 开启阅读量
 - 后端部署与维护见 `docs/WALINE.md`
 
 ### fontConfig.ts
