@@ -6,7 +6,6 @@ pinned: true
 description: 本站从 2022 年开始记录，2025 年迁到 Astro。2026 年这次用 Firefly 重新搭建，记录选型、环境、一键脚本、Cloudflare Workers 部署和 Pages CMS 后台的完整过程与故障处理。
 tags: [Astro, Firefly, Cloudflare Pages, Pages CMS, 建站]
 category: 建站
-comment: false
 ---
 
 这个博客从 2022 年 8 月开始记录，最早用 Hugo，2025 年迁到 Astro。2026 年这次换成 Firefly，相当于把站点重新搭了一遍：选模板、准备环境、补本地脚本、做主题定制、接入部署与内容后台。每个阶段的决策都留下了记录，这里按实际顺序整理，重点说明配置项和出现过的问题，方便以后回溯，也方便搭同类站点时少走弯路。

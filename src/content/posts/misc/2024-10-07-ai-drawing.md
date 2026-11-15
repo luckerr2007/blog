@@ -6,7 +6,6 @@ tags: [AI, 观察, 思考, 创作]
 category: 观察
 series: AI 观察
 seriesOrder: 3
-comment: false
 ---
 
 我画画一直不好。线条歪，比例怪，上色像在给一张脸涂墙。但我喜欢做东西，写东西、拼东西、给一篇文章配一张自己画的图，哪怕画得很丑。

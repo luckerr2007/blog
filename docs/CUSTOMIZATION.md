@@ -42,7 +42,9 @@
 - 未改动：`spineModelConfig.enable` 与 `live2dWidgetConfig.enable` 模板默认已是 `false`，保持关闭
 
 ### commentConfig.ts
-- 未改动：模板默认 `type: "none"`。评论暂停即维持该值，留言板页面同步关闭
+- 已启用 Giscus：`type: "giscus"`，仓库 `luckerr2007/blog`
+- 仓库 ID / General 分类 ID 见 `src/config/commentConfig.ts`；`mapping: "pathname"`，每篇文章和 `/guestbook/` 各自对应一个 Discussion
+- 需要 GitHub 账号登录；仓库需启用 Discussions，并安装 [giscus App](https://github.com/apps/giscus)
 
 ### fontConfig.ts
 - **Inter / JetBrains Mono**：`provider` 由 `fontsource` 改为 `google`
@@ -117,7 +119,7 @@ pnpm install && pnpm check && ./command build
 - `announcementConfig.ts`：示例公告 → 本站说明
 - `backgroundWallpaper.ts` 的 `homeText`：模板英文诗句 → 中文副标题
 - `siteConfig.ts`：bilibili / bangumi / vndb / mal 的 ID 与 Client ID 清空（对应页面本就关闭）
-- `commentConfig.ts`：Giscus 仓库与分类 ID 清空（`type: "none"`）
+- `commentConfig.ts`：Giscus 仓库与分类 ID 在启用评论时重新填入（当前已启用）
 - `friendsConfig.ts` / `galleryConfig.ts` / `sponsorConfig.ts` / `booknavConfig.ts`：删除 CuteLeaf 演示友链、相册、打赏方式与书签，保留字段格式注释
 
 ## 七、灰阶视觉复刻（v1.5）

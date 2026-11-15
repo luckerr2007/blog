@@ -4,7 +4,6 @@ published: 2024-09-08
 description: 开了半年评论，收到的大多是垃圾链接。最后决定关掉，把讨论挪到 GitHub。
 tags: [博客, 随笔]
 category: 随笔
-comment: false
 ---
 
 年初给博客接了 Giscus，基于 GitHub Discussions，不需要自己维护后端。配置很简单，在仓库里开一个 Discussions 分类，把 ID 填进配置，页面底部就多了一个评论框。
@@ -20,3 +19,7 @@ comment: false
 现在想讨论文章内容，可以去 GitHub 仓库提 issue。那里不适合闲聊，但至少每条消息都有上下文。
 
 写博客是自言自语。评论是另一种东西，我还没准备好。
+
+---
+
+2026 年更新：评论又开回来了，换成了 Giscus。留言板也重新上线。那篇《把评论关了》没有删，留着当记录。

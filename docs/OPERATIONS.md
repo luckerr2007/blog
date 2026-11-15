@@ -144,16 +144,21 @@ npx wrangler deploy --config workers/redirect/wrangler.jsonc
 
 见 [PAGES_CMS.md](./PAGES_CMS.md)。
 
-## 六、评论系统（当前关闭）
+## 六、评论系统（Giscus）
 
-`src/config/commentConfig.ts` 里 `type: "none"`，`siteConfig.pages.guestbook = false`。
+`src/config/commentConfig.ts` 里 `type: "giscus"`，`siteConfig.pages.guestbook = true`。
 
-需要开启时：
+- 仓库：`luckerr2007/blog`
+- 分类：`General`
+- 映射：`pathname`，文章页和 `/guestbook/` 各自创建一个 Discussion
+- 仓库需启用 Discussions，并安装 [giscus App](https://github.com/apps/giscus)
+- 访客需要 GitHub 账号登录；未登录时评论区会显示登录提示
 
-1. 部署 Waline 后端（推荐 Cloudflare Workers + D1，或 Vercel 一键模板）；
-2. 设置环境变量：`SERVER_URL`、`SITE_NAME`、`SITE_URL=https://www.taosu.dpdns.org`、`SECURE_DOMAINS`（含 `*.pages.dev` 预览域）；
-3. 前端把 `type` 改成 `"waline"`，填 `waline.serverURL`；
-4. 需要留言板时再把 `pages.guestbook` 打开。
+如果以后要换成 Waline：
+
+1. 部署 Waline 后端（Cloudflare Workers + D1 或 Vercel 一键模板）；
+2. 设置 `SERVER_URL`、`SITE_NAME`、`SITE_URL=https://www.taosu.dpdns.org`、`SECURE_DOMAINS`；
+3. 前端把 `type` 改成 `"waline"`，填 `waline.serverURL`。
 
 ## 七、日常维护
 

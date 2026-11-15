@@ -5,7 +5,6 @@ updated: 2024-05-02
 description: 从 Windows 迁到 Apple Silicon，记录 Homebrew、终端、编辑器和几个常用工具的配置。
 tags: [macOS, 工具, 效率]
 category: 工具
-comment: false
 ---
 
 > 旧文存档：写于 2023 年 8 月，软件版本和价格可能已经变化。

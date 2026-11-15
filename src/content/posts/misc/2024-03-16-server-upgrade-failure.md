@@ -6,7 +6,6 @@ tags: [折腾, 硬件, 家庭服务器]
 category: 折腾
 series: 家庭服务器
 seriesOrder: 3
-comment: false
 ---
 
 *写于 2024 年 3 月。*

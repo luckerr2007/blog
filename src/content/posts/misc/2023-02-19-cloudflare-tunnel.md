@@ -6,7 +6,6 @@ tags: [Cloudflare Tunnel, 家庭服务器, 折腾]
 category: 折腾
 series: 家庭服务器
 seriesOrder: 2
-comment: false
 ---
 
 > 旧文存档：写于 2023 年 2 月，命令和配置以当时的 cloudflared 版本为准。

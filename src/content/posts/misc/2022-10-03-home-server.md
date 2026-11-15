@@ -7,7 +7,6 @@ tags: [折腾, 家庭服务器, Ubuntu]
 category: 折腾
 series: 家庭服务器
 seriesOrder: 1
-comment: false
 ---
 
 > 旧文存档：写于 2022 年 10 月，硬件和网络信息已做模糊处理。

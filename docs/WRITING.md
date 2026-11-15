@@ -30,7 +30,7 @@ draft: false                       # true = 草稿，不参与构建
 pinned: false                      # true = 置顶
 lang: zh-CN                        # 仅当本文语言与站点语言不同时填写
 author: 桃苏                        # 可选，默认取站点作者
-comment: false                     # 评论关闭期间无效果，保留字段
+comment: true                      # 默认开启；如需关闭改为 false
 password: ""                       # 可选，设置后文章加密
 passwordHint: ""                   # 可选，密码提示
 series: "建站手记"                  # 可选，系列名

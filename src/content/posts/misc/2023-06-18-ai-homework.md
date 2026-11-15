@@ -6,7 +6,6 @@ tags: [AI, 观察, 思考]
 category: 观察
 series: AI 观察
 seriesOrder: 2
-comment: false
 ---
 
 刚开始用 ChatGPT 的那几个月，我像所有刚拿到新玩具的人一样，什么都想让它做。

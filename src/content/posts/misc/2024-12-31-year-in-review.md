@@ -4,7 +4,6 @@ published: 2024-12-31
 description: 今年整理了书桌，重新用起 RSS，也第一次认真想 AI 画画意味着什么。
 tags: [随笔, 年度总结]
 category: 随笔
-comment: false
 ---
 
 2024 年最后一天。外面很冷，不想出门，泡了杯茶，把今年写过的东西翻了一遍。

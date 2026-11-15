@@ -4,7 +4,6 @@ published: 2023-04-16
 description: 初二时没读进去的一本书，一年后再看，很多章节才对上号。
 tags: [阅读, Unix, 读书笔记]
 category: 阅读
-comment: false
 ---
 
 初二时从学校图书馆借过《Unix 编程艺术》，翻了几页就还了。当时觉得它讲的是几十年前的旧事，离课程作业太远。

@@ -5,7 +5,6 @@ updated: 2025-06-15
 description: 试过公众号、Notion 和现成模板，最后发现想要的只是一个能长期维护、不被平台带走的角落。
 tags: [随笔, 博客]
 category: 随笔
-comment: false
 ---
 
 这个博客今天算是正式开张了。

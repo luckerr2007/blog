@@ -7,7 +7,6 @@ tags: [LEMOM, MIDI, MuScriptor, Apple Silicon]
 category: 音频
 series: 音频工具三件套
 seriesOrder: 2
-comment: false
 ---
 
 LEMOM 是 LuckErrMusicOfMidi 的简称。输入一首歌，选择分离或整曲转写，输出 MIDI。

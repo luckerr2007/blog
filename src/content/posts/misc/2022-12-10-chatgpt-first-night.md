@@ -6,7 +6,6 @@ tags: [AI, 观察, 成长]
 category: 观察
 series: AI 观察
 seriesOrder: 1
-comment: false
 ---
 
 那天晚上本来在写物理作业。台灯有点暗，笔尖在草稿纸上划来划去，窗外偶尔有车经过。

@@ -5,7 +5,6 @@ updated: 2026-11-14
 description: Hugo 很快，但我想在文章里放一点交互。迁到 Astro 之后，构建变慢了，维护反而简单了。
 tags: [Astro, Hugo, 建站, 博客]
 category: 建站
-comment: false
 ---
 
 > 旧文存档：写于 2025 年 6 月，当时用的是 Astro 5，现在的版本和配置已经不同。

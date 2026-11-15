@@ -24,6 +24,9 @@ const getDynamicNavBarConfig = (): NavBarConfig => {
 		children: [LinkPresets.Archive, LinkPresets.Categories, LinkPresets.Tags],
 	});
 
+	// 留言
+	links.push(LinkPresets.Guestbook);
+
 	// 关于
 	links.push(LinkPresets.About);
 

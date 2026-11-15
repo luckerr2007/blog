@@ -4,7 +4,6 @@ published: 2023-12-31
 description: 今年换了主力机，学会了用 Cloudflare Tunnel，也开始把 AI 当成真正的学习工具。
 tags: [随笔, 年度总结]
 category: 随笔
-comment: false
 ---
 
 2023 年的最后一天。下午把房间收拾了一遍，翻出几张去年买的贴纸，还没拆。

@@ -6,7 +6,6 @@ tags: [AI, 观察, 成长, 思考]
 category: 观察
 series: AI 观察
 seriesOrder: 4
-comment: false
 ---
 
 第一次用 ChatGPT 是 2022 年 12 月。那时它刚发布不久，我在台灯下写物理作业，偷偷注册了一个账号。三年过去，我换了电脑，长了十几厘米，搬过两次家，它也从新闻变成了日常。

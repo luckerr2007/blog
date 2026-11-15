@@ -4,7 +4,6 @@ published: 2025-12-31
 description: 今年把博客迁到 Astro，写完了几篇长文，也终于承认自己不需要那么多新工具。
 tags: [随笔, 年度总结]
 category: 随笔
-comment: false
 ---
 
 2025 年的最后一天。外面降温了，窗户上有一层雾。

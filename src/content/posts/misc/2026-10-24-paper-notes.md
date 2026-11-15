@@ -6,7 +6,6 @@ tags: [AI, 观察, 成长, 思考]
 category: 观察
 series: AI 观察
 seriesOrder: 5
-comment: false
 ---
 
 大学开学两个月，我发现自己又回到了纸笔。

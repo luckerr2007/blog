@@ -7,7 +7,6 @@ tags: [FFmpeg, 音频, 工具]
 category: 工具
 series: 声音笔记
 seriesOrder: 1
-comment: false
 ---
 
 > 旧文存档：写于 2024 年 1 月，命令在不同版本的 ffmpeg 上可能略有差异。

@@ -7,7 +7,6 @@ tags: [MusicParser, FastAPI, 音频解析, 本地服务]
 category: 音频
 series: 音频工具三件套
 seriesOrder: 3
-comment: false
 ---
 
 LEMOM 面向普通使用者：Vue 界面、PyInstaller 打包、任务卡、模型下载和设置页一应俱全。

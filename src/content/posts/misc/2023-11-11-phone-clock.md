@@ -5,7 +5,6 @@ updated: 2024-08-01
 description: 一台屏幕有轻微烧屏的旧 Android 手机，装上 Kiosk 浏览器，变成书桌上的常亮时钟。
 tags: [折腾, Android, 旧物利用]
 category: 折腾
-comment: false
 ---
 
 > 旧文存档：写于 2023 年 11 月。
