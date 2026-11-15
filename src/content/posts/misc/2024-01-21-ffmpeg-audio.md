@@ -44,4 +44,4 @@ ffmpeg -i input.m4a -af silencedetect=noise=-35dB:d=1.5 -f null -
 
 ---
 
-后记（2026-06）：后来开始折腾音频分离和 MIDI，这些命令行习惯一直用得上。那篇写在[《从一首歌里拆出鼓和贝斯》](/posts/misc/2026-06-02-audio-separation/)。
+2026 年更新：后来开始折腾音频分离和 MIDI，这些命令行习惯一直用得上。那篇写在[《从一首歌里拆出鼓和贝斯》](/posts/misc/2026-06-02-audio-separation/)。

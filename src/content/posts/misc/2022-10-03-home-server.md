@@ -30,4 +30,4 @@ comment: false
 
 ---
 
-后记（2023-02）：后来用 Cloudflare Tunnel 把其中两个服务接了出去，过程写在[这里](/posts/misc/2023-02-19-cloudflare-tunnel/)。再往后换了一块 1TB SSD，这台机器一直跑到 2025 年。
+2023 年更新：后来用 Cloudflare Tunnel 把其中两个服务接了出去，过程写在[这里](/posts/misc/2023-02-19-cloudflare-tunnel/)。再往后换了一块 1TB SSD，这台机器一直跑到 2025 年。

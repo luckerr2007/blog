@@ -4,7 +4,7 @@ published: 2025-06-15
 updated: 2026-11-14
 description: Hugo 很快，但我想在文章里放一点交互。迁到 Astro 之后，构建变慢了，维护反而简单了。
 tags: [Astro, Hugo, 建站, 博客]
-category: 博客指南
+category: 建站
 comment: false
 ---
 
@@ -29,4 +29,4 @@ Astro 的好处是组件模型眼熟。文章用 Markdown 或 MDX，页面用 `.
 
 ---
 
-后记（2026-11）：这套 Astro 站点后来换成了 Firefly，重建过程写在[《重建这个博客：从选型到上线》](/posts/guide/how-this-blog-was-built/)。
+2026 年更新：这套 Astro 站点后来换成了 Firefly，重建过程写在[《重建这个博客：从选型到上线》](/posts/guide/how-this-blog-was-built/)。

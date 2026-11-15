@@ -11,7 +11,8 @@ interface Props {
 
 const { currentPostCategory } = Astro.props as Props;
 
-const categories = await getCategoryList();
+// 分类栏只展示前 5 个，其余通过「更多」进入分类页，避免窄屏横向滚动裁掉第一个分类。
+const categories = (await getCategoryList()).slice(0, 5);
 const totalPosts = (await getSortedPostsList()).length;
 const homeUrl = url("/");
 const archiveUrl = url("/archive/");
@@ -61,7 +62,7 @@ function initialActive(categoryName: string): {
     </a>
     <a
       href={archiveUrl}
-      class="category-pill focus-ring-inset text-sm px-4 py-1.5 whitespace-nowrap shrink-0
+      class="category-pill focus-ring-inset text-sm px-3 py-1.5 whitespace-nowrap shrink-0
              transition-colors duration-150 ease-out flex items-center justify-center"
       data-category-name="__archive__"
       data-active={initialActive("__archive__").active ? "" : undefined}
@@ -72,14 +73,14 @@ function initialActive(categoryName: string): {
     <div class="category-divider shrink-0"></div>
     <div class="scroll-area relative">
       <div class="scroll-fade scroll-fade-left" aria-hidden="true"></div>
-      <div class="category-scroll flex gap-2 overflow-x-auto">
+      <div class="category-scroll flex gap-1.5 overflow-x-auto">
         {
           categories.map((cat) => {
             const active = initialActive(cat.name);
             return (
             <a
               href={cat.url}
-              class="category-pill focus-ring-inset text-sm px-4 py-1.5 whitespace-nowrap
+              class="category-pill focus-ring-inset text-sm px-3 py-1.5 whitespace-nowrap
                      transition-colors duration-150 ease-out flex items-center justify-center"
               data-category-name={cat.name}
               data-active={active.active ? "" : undefined}

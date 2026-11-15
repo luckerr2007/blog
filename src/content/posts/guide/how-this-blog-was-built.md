@@ -5,7 +5,7 @@ updated: 2026-11-14
 pinned: true
 description: 本站从 2022 年开始记录，2025 年迁到 Astro。2026 年这次用 Firefly 重新搭建，记录选型、环境、一键脚本、Cloudflare Workers 部署和 Pages CMS 后台的完整过程与故障处理。
 tags: [Astro, Firefly, Cloudflare Pages, Pages CMS, 建站]
-category: 博客指南
+category: 建站
 comment: false
 ---
 

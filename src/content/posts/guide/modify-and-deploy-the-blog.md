@@ -4,7 +4,7 @@ published: 2026-11-14
 updated: 2026-11-14
 description: 以本站相对 Firefly 6.16.9 的改动为例，说明配置层、样式覆盖层和上游组件补丁的边界，以及每日一言、动效、内容创建、构建验证、Cloudflare Workers 发布与回滚的完整流程。
 tags: [Astro, Firefly, Cloudflare Workers, 建站]
-category: 博客指南
+category: 建站
 comment: false
 ---
 
