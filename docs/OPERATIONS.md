@@ -87,6 +87,9 @@ START_TIMEOUT=180 ./command start # 首次启动慢可加大超时
 	"compatibility_date": "2025-01-01",
 	"compatibility_flags": ["nodejs_compat"],
 	"assets": { "directory": "./dist" },
+	"routes": [
+		{ "pattern": "www.taosu.dpdns.org/*", "zone_name": "taosu.dpdns.org" }
+	],
 	"previews": {}
 }
 ```
@@ -117,13 +120,29 @@ CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=xxx npx wrangler deploy
 
 成功后会输出 `https://blog.<子域>.workers.dev` 与当前 Version ID。
 
-### 域名
+### 域名与 Cloudflare 优选
 
-- 主域 `www.taosu.dpdns.org` 绑定到 Worker `blog`（Custom Domain，HTTPS 自动签发）
-- 裸域 `taosu.dpdns.org` 绑定到 Worker `taosu-redirect`，所有请求按原路径和查询串 301 到 `https://www.taosu.dpdns.org`
+- 主域 `www.taosu.dpdns.org` 使用 **Worker Route** `www.taosu.dpdns.org/*` 绑定 Worker `blog`；DNS 是一条 **DNS only** 的 CNAME，指向 Cloudflare 优选域名 `cloudflare.182682.xyz`
+- 裸域 `taosu.dpdns.org` 使用 **Worker Route** `taosu.dpdns.org/*` 绑定 Worker `taosu-redirect`；DNS 同样 CNAME 到 `cloudflare.182682.xyz`，所有请求按原路径和查询串 301 到 `https://www.taosu.dpdns.org`
 - 旧域名 `liveroom.dpdns.org` / `www.liveroom.dpdns.org` 已从 Worker `blog` 解绑，不再提供服务
-- 新增域名：Workers & Pages → blog → Settings → Domains & Routes → Add → Custom domain 填域名即可
+- `waline.taosu.dpdns.org` 仍是 Custom Domain，绑定 Worker `waline`，不参与优选
 - 规范域名（canonical / sitemap / RSS）为 `https://www.taosu.dpdns.org`，改域名时同步改 `siteConfig.site_url`
+
+为什么不直接使用 Custom Domain：Custom Domain 会把 DNS 记录锁成 Cloudflare 代理状态，解析入口只能是 Cloudflare 默认 Anycast；Worker Route 只负责“Host 命中后交给哪个 Worker”，DNS 可以自己控制。把 DNS 改成优选域名的 DNS only CNAME 后，请求仍然到达 Cloudflare 边缘，Worker Route 仍然生效，但入口 IP 由优选域名返回，国内访问通常会落到 HKG 等更近的节点。
+
+验证方式：
+
+```bash
+dig +short www.taosu.dpdns.org A
+curl -sS -D - -o /dev/null https://www.taosu.dpdns.org/
+curl -sS https://www.taosu.dpdns.org/cdn-cgi/trace
+```
+
+`cf-ray` 末尾应是 `HKG`；`cf-cache-status` 应为 `HIT`。如果优选域名本身不可用，临时删掉 CNAME，在 Worker 的 Domains & Routes 里恢复 Custom Domain，即可回到 Cloudflare 默认 Anycast。
+
+优选域名会返回多个 Cloudflare 边缘 IP，并自行更新列表；客户端/系统在某个 IP 不可用时会尝试其他地址，这就是“自动切换”的来源。若发现 IPv6 线路不稳定，可改用只返回 IPv4 的优选域名，或把 CNAME 换成多条 A 记录（会失去自动更新，需要定期复测）。
+
+新增域名时，优先采用“Worker Route + DNS only CNAME”的方式；只有不需要优选、或第三方服务要求 Custom Domain 时，才在 Workers & Pages → blog → Settings → Domains & Routes 里添加 Custom Domain。
 
 裸域跳转 Worker 的源码在 `workers/redirect/`，修改后部署：
 
