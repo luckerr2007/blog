@@ -124,13 +124,15 @@ CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=xxx npx wrangler deploy
 
 ### 域名与 Cloudflare 优选
 
-- 主域 `www.taosu.dpdns.org` 使用 **Worker Route** `www.taosu.dpdns.org/*` 绑定 Worker `blog`；DNS 是一条 **DNS only** 的 CNAME，指向 Cloudflare 优选域名 `cloudflare.182682.xyz`
-- 裸域 `taosu.dpdns.org` 使用 **Worker Route** `taosu.dpdns.org/*` 绑定 Worker `taosu-redirect`；DNS 同样 CNAME 到 `cloudflare.182682.xyz`，所有请求按原路径和查询串 301 到 `https://www.taosu.dpdns.org`
+- 主域 `www.taosu.dpdns.org` 使用 **Worker Route** `www.taosu.dpdns.org/*` 绑定 Worker `blog`；DNS 是 3 条 **DNS only** 的 A 记录，当前指向 HKG 边缘 `172.66.135.252` / `172.66.138.110` / `172.66.204.223`
+- 裸域 `taosu.dpdns.org` 使用 **Worker Route** `taosu.dpdns.org/*` 绑定 Worker `taosu-redirect`；DNS 使用同一组 A 记录，所有请求按原路径和查询串 301 到 `https://www.taosu.dpdns.org`
 - 旧域名 `liveroom.dpdns.org` / `www.liveroom.dpdns.org` 已从 Worker `blog` 解绑，不再提供服务
 - `waline.taosu.dpdns.org` 仍是 Custom Domain，绑定 Worker `waline`，不参与优选
 - 规范域名（canonical / sitemap / RSS）为 `https://www.taosu.dpdns.org`，改域名时同步改 `siteConfig.site_url`
 
-为什么不直接使用 Custom Domain：Custom Domain 会把 DNS 记录锁成 Cloudflare 代理状态，解析入口只能是 Cloudflare 默认 Anycast；Worker Route 只负责“Host 命中后交给哪个 Worker”，DNS 可以自己控制。把 DNS 改成优选域名的 DNS only CNAME 后，请求仍然到达 Cloudflare 边缘，Worker Route 仍然生效，但入口 IP 由优选域名返回，国内访问通常会落到 HKG 等更近的节点。
+为什么不直接使用 Custom Domain：Custom Domain 会把 DNS 记录锁成 Cloudflare 代理状态，解析入口只能是 Cloudflare 默认 Anycast；Worker Route 只负责“Host 命中后交给哪个 Worker”，DNS 可以自己控制。把 DNS 改成优选 IP 的 DNS only A 记录后，请求仍然到达 Cloudflare 边缘，Worker Route 仍然生效，但入口 IP 由我们控制，国内访问会落到 HKG 等更近的节点。
+
+当前使用 3 条 HKG A 记录而不是 CNAME，原因是部分优选域名会同时返回 IPv6，而当前线路的 IPv6 会绕到 SEA/LHR 甚至超时；多条 A 记录只走 IPv4，并且客户端在某个 IP 连接失败时会自动尝试下一个。
 
 验证方式：
 
@@ -140,11 +142,23 @@ curl -sS -D - -o /dev/null https://www.taosu.dpdns.org/
 curl -sS https://www.taosu.dpdns.org/cdn-cgi/trace
 ```
 
-`cf-ray` 末尾应是 `HKG`；`cf-cache-status` 应为 `HIT`。如果优选域名本身不可用，临时删掉 CNAME，在 Worker 的 Domains & Routes 里恢复 Custom Domain，即可回到 Cloudflare 默认 Anycast。
+`cf-ray` 末尾应是 `HKG`；`cf-cache-status` 应为 `HIT`。
 
-优选域名会返回多个 Cloudflare 边缘 IP，并自行更新列表；客户端/系统在某个 IP 不可用时会尝试其他地址，这就是“自动切换”的来源。若发现 IPv6 线路不稳定，可改用只返回 IPv4 的优选域名，或把 CNAME 换成多条 A 记录（会失去自动更新，需要定期复测）。
+刷新 A 记录（半自动）：先用 `dig +short cloudflare.182682.xyz A` 取当前 IP 池，再对每个 IP 检查落点：
 
-新增域名时，优先采用“Worker Route + DNS only CNAME”的方式；只有不需要优选、或第三方服务要求 Custom Domain 时，才在 Workers & Pages → blog → Settings → Domains & Routes 里添加 Custom Domain。
+```bash
+for ip in $(dig +short cloudflare.182682.xyz A | grep -E '^[0-9]+\.'); do
+  printf '%s ' "$ip"
+  curl -k -sS --max-time 5 --resolve www.taosu.dpdns.org:443:"$ip" \
+    https://www.taosu.dpdns.org/cdn-cgi/trace | grep '^colo='
+done
+```
+
+保留 `colo=HKG` 的 IP，替换 Cloudflare DNS 里的 A 记录即可。全自动刷新需要创建一个只允许 `Zone.DNS:Edit` 的 Cloudflare API Token，再挂一个定时 GitHub Actions workflow；当前没有把长期 Token 放进仓库，所以是手动/半自动。
+
+如果优选 IP 全部不可用，临时删掉 A 记录，在 Worker 的 Domains & Routes 里恢复 Custom Domain，即可回到 Cloudflare 默认 Anycast。
+
+新增域名时，优先采用“Worker Route + DNS only A/CNAME”的方式；只有不需要优选、或第三方服务要求 Custom Domain 时，才在 Workers & Pages → blog → Settings → Domains & Routes 里添加 Custom Domain。
 
 裸域跳转 Worker 的源码在 `workers/redirect/`，修改后部署：
 
