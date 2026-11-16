@@ -5,9 +5,5 @@
 	"assets": {
 		"directory": "./dist"
 	},
-	// www 走 Cloudflare 优选 CNAME（DNS only），路由负责把 Host 交回 Worker。
-	"routes": [
-		{ "pattern": "www.taosu.dpdns.org/*", "zone_name": "taosu.dpdns.org" }
-	],
 	"previews": {}
 }

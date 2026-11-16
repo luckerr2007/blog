@@ -87,12 +87,14 @@ START_TIMEOUT=180 ./command start # 首次启动慢可加大超时
 	"compatibility_date": "2025-01-01",
 	"compatibility_flags": ["nodejs_compat"],
 	"assets": { "directory": "./dist" },
-	"routes": [
-		{ "pattern": "www.taosu.dpdns.org/*", "zone_name": "taosu.dpdns.org" }
-	],
 	"previews": {}
 }
 ```
+
+> Worker Routes 目前在 Cloudflare 控制台/API 里单独维护，不写进 `wrangler.jsonc`：
+> GitHub Actions 的 `CLOUDFLARE_API_TOKEN` 没有 `Workers Routes:Edit`，把 `routes` 写进配置会让
+> `wrangler deploy` 在更新触发器时报 `No access to the specified resource`。
+> 无 `routes` 的部署不会删除已有路由（已实测）。
 
 > `previews: {}` 不能省：wrangler 4.147 的 `wrangler preview`（预览部署）会校验该字段，缺了会直接报
 > `Failed: error occurred while running deploy command`。
